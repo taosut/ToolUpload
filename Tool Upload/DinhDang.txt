@@ -1,0 +1,13 @@
+﻿.png
+.PNG
+.jpg
+.JPG
+.gif
+.GIF
+.jpeg
+.JPEG
+.bmp
+.BMP
+.webm
+.WEBM
+.WebM

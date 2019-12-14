@@ -1,0 +1,21 @@
+E:\Code\Csharp code\Tool Upload\Tool Upload\bin\x86\Debug\Tool Upload.exe.config
+E:\Code\Csharp code\Tool Upload\Tool Upload\bin\x86\Debug\Tool Upload.exe
+E:\Code\Csharp code\Tool Upload\Tool Upload\bin\x86\Debug\Tool Upload.pdb
+E:\Code\Csharp code\Tool Upload\Tool Upload\bin\x86\Debug\EntityFramework.dll
+E:\Code\Csharp code\Tool Upload\Tool Upload\bin\x86\Debug\EntityFramework.SqlServer.dll
+E:\Code\Csharp code\Tool Upload\Tool Upload\bin\x86\Debug\System.Data.SQLite.dll
+E:\Code\Csharp code\Tool Upload\Tool Upload\bin\x86\Debug\System.Data.SQLite.EF6.dll
+E:\Code\Csharp code\Tool Upload\Tool Upload\bin\x86\Debug\System.Data.SQLite.Linq.dll
+E:\Code\Csharp code\Tool Upload\Tool Upload\bin\x86\Debug\WebDriver.dll
+E:\Code\Csharp code\Tool Upload\Tool Upload\bin\x86\Debug\EntityFramework.xml
+E:\Code\Csharp code\Tool Upload\Tool Upload\bin\x86\Debug\EntityFramework.SqlServer.xml
+E:\Code\Csharp code\Tool Upload\Tool Upload\bin\x86\Debug\System.Data.SQLite.xml
+E:\Code\Csharp code\Tool Upload\Tool Upload\bin\x86\Debug\WebDriver.xml
+E:\Code\Csharp code\Tool Upload\Tool Upload\obj\x86\Debug\Tool_Upload.Form1.resources
+E:\Code\Csharp code\Tool Upload\Tool Upload\obj\x86\Debug\Tool_Upload.Properties.Resources.resources
+E:\Code\Csharp code\Tool Upload\Tool Upload\obj\x86\Debug\Tool Upload.csproj.GenerateResource.cache
+E:\Code\Csharp code\Tool Upload\Tool Upload\obj\x86\Debug\Tool Upload.csproj.CoreCompileInputs.cache
+E:\Code\Csharp code\Tool Upload\Tool Upload\obj\x86\Debug\Tool Upload.csproj.CopyComplete
+E:\Code\Csharp code\Tool Upload\Tool Upload\obj\x86\Debug\Tool Upload.exe
+E:\Code\Csharp code\Tool Upload\Tool Upload\obj\x86\Debug\Tool Upload.pdb
+E:\Code\Csharp code\Tool Upload\Tool Upload\obj\x86\Debug\Tool Upload.csprojAssemblyReference.cache
