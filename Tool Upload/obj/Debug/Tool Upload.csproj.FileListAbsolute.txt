@@ -41,3 +41,25 @@ E:\Code\Csharp code\Tool Upload\Tool Upload\obj\Debug\Tool Upload.exe
 E:\Code\Csharp code\Tool Upload\Tool Upload\obj\Debug\Tool Upload.pdb
 E:\Code\Csharp code\Tool Upload\Tool Upload\bin\Debug\System.Data.SQLite.dll.config
 E:\Code\Csharp code\Tool Upload\Tool Upload\obj\Debug\Tool_Upload.Form1.resources
+E:\Code\GitHub\ToolUpload\Tool Upload\bin\Debug\Tool Upload.exe.config
+E:\Code\GitHub\ToolUpload\Tool Upload\bin\Debug\Tool Upload.exe
+E:\Code\GitHub\ToolUpload\Tool Upload\bin\Debug\Tool Upload.pdb
+E:\Code\GitHub\ToolUpload\Tool Upload\bin\Debug\EntityFramework.dll
+E:\Code\GitHub\ToolUpload\Tool Upload\bin\Debug\EntityFramework.SqlServer.dll
+E:\Code\GitHub\ToolUpload\Tool Upload\bin\Debug\System.Data.SQLite.dll
+E:\Code\GitHub\ToolUpload\Tool Upload\bin\Debug\System.Data.SQLite.EF6.dll
+E:\Code\GitHub\ToolUpload\Tool Upload\bin\Debug\System.Data.SQLite.Linq.dll
+E:\Code\GitHub\ToolUpload\Tool Upload\bin\Debug\WebDriver.dll
+E:\Code\GitHub\ToolUpload\Tool Upload\bin\Debug\EntityFramework.xml
+E:\Code\GitHub\ToolUpload\Tool Upload\bin\Debug\EntityFramework.SqlServer.xml
+E:\Code\GitHub\ToolUpload\Tool Upload\bin\Debug\System.Data.SQLite.xml
+E:\Code\GitHub\ToolUpload\Tool Upload\bin\Debug\System.Data.SQLite.dll.config
+E:\Code\GitHub\ToolUpload\Tool Upload\bin\Debug\WebDriver.xml
+E:\Code\GitHub\ToolUpload\Tool Upload\obj\Debug\Tool Upload.csprojAssemblyReference.cache
+E:\Code\GitHub\ToolUpload\Tool Upload\obj\Debug\Tool_Upload.Form1.resources
+E:\Code\GitHub\ToolUpload\Tool Upload\obj\Debug\Tool_Upload.Properties.Resources.resources
+E:\Code\GitHub\ToolUpload\Tool Upload\obj\Debug\Tool Upload.csproj.GenerateResource.cache
+E:\Code\GitHub\ToolUpload\Tool Upload\obj\Debug\Tool Upload.csproj.CoreCompileInputs.cache
+E:\Code\GitHub\ToolUpload\Tool Upload\obj\Debug\Tool Upload.csproj.CopyComplete
+E:\Code\GitHub\ToolUpload\Tool Upload\obj\Debug\Tool Upload.exe
+E:\Code\GitHub\ToolUpload\Tool Upload\obj\Debug\Tool Upload.pdb

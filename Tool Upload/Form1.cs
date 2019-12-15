@@ -98,10 +98,13 @@ namespace Tool_Upload
 
         void test()
         {
-            WebClient client = new WebClient();
-            WebProxy wp = new WebProxy("http://contoso", 80);
-            
+            //string file = @"https://proxy.truyen.cloud/?data=3ue9+GoYorNt/mgZ7ApBsN+6X0gghHRM0V/O9dLhpmWGBJiULn9rQB/u1slD3YKg1lWpVCoxPtkkia++QbLGU09/FR8D/5dObz7PklcBfZe6boYC31aUC11jRqKbcq1F";
+            //WebClient client = new WebClient();
+            //client.Headers.Set("Referer", "http://www.nettruyen.com/truyen-tranh/sung-the-thanh-nghien-luc-thieu-sung-tu-day-long/chap-2/526686");
+            //client.DownloadFile(file, @"C:\Users\NBT\Desktop\test.webp");
 
+            //WebClient client = new WebClient();
+            //pictureBox1
             //chromeDriver.Url = "https://blogtruyen.vn/22615";
             //chromeDriver.Navigate();
 
@@ -126,7 +129,7 @@ namespace Tool_Upload
             ////File f = detector.getLocalFile(path);
             //InputFile.SendKeys("C:/Users/NBT/Downloads/Fix/Chapter 21/00.jpeg" + "\n");// + "\n" + "C:/Users/NBT/Downloads/Fix/1.jpeg");
 
-            
+
         }
 
         private void button7_Click(object sender, EventArgs e)
@@ -502,7 +505,7 @@ namespace Tool_Upload
 
                     if(DemThoiGian == 180)
                     {
-                        KetQua = "[Lỗi dung lượng ảnh quá lớn]/n" + Nguon + " " + ThuMuc.ToString();
+                        KetQua = "[Lỗi dung lượng ảnh quá lớn]\n" + Nguon + " " + ThuMuc.ToString();
                         break;
                     }
 
@@ -1215,6 +1218,8 @@ namespace Tool_Upload
                     btnLeech.Enabled = true;
                     dtgvTruyen.Enabled = true;
                     rtbDanhSachLoi.ReadOnly = false;
+                    cbAutoLeechDacBiet.Checked = false;
+
 
                 }) { IsBackground = true };
                 

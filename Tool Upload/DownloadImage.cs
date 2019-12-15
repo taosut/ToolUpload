@@ -273,6 +273,14 @@ namespace Tool_Upload
                     LinkAnh = anh.ToString().Replace(@"lazy"" src=""", "");
                     LinkAnh = LinkAnh.Replace(@"""", "");
 
+                    if (LinkAnh.ToLower().Contains("//proxy") == true)
+                    {
+                        if (LinkAnh.ToLower().Contains("http") == false)
+                        {
+                            LinkAnh = "https:" + LinkAnh;
+                        }
+                    }
+
                     try
                     {
                         if (Directory.Exists(DuongDan + "\\" + Ten) == false)
@@ -448,6 +456,14 @@ namespace Tool_Upload
                 {
                     LinkAnh = anh.ToString().Replace(@"lazy"" src=""", "");
                     LinkAnh = LinkAnh.Replace(@"""", "");
+
+                    if (LinkAnh.ToLower().Contains("//proxy") == true)
+                    {
+                        if (LinkAnh.ToLower().Contains("http") == false)
+                        {
+                            LinkAnh = "https:" + LinkAnh;
+                        }
+                    }
 
                     try
                     {
@@ -644,6 +660,14 @@ namespace Tool_Upload
                     LinkAnh = anh.ToString().Replace(@"<img src=""", "");
                     LinkAnh = LinkAnh.Replace(@"""", "");
 
+                    if (LinkAnh.ToLower().Contains("//proxy") == true)
+                    {
+                        if(LinkAnh.ToLower().Contains("http") == false)
+                        {
+                            LinkAnh = "https:" + LinkAnh;
+                        }
+                    }
+
                     try
                     {
                         if (Directory.Exists(DuongDan + "\\" + Ten) == false)
@@ -832,6 +856,14 @@ namespace Tool_Upload
                     LinkAnh = LinkCuaAnh[0].ToString().Replace(@"src='", "");
                     LinkAnh = LinkAnh.Replace(@"'", "");
 
+                    if (LinkAnh.ToLower().Contains("//proxy") == true)
+                    {
+                        if (LinkAnh.ToLower().Contains("http") == false)
+                        {
+                            LinkAnh = "https:" + LinkAnh;
+                        }
+                    }
+
                     try
                     {
                         if (Directory.Exists(DuongDan + "\\" + Ten) == false)
@@ -1003,6 +1035,14 @@ namespace Tool_Upload
                 {
                     LinkAnh = anh.ToString().Replace(@"class="""" src=""", "");
                     LinkAnh = LinkAnh.Replace(@"""", "");
+
+                    if (LinkAnh.ToLower().Contains("//proxy") == true)
+                    {
+                        if (LinkAnh.ToLower().Contains("http") == false)
+                        {
+                            LinkAnh = "https:" + LinkAnh;
+                        }
+                    }
 
                     try
                     {
@@ -1180,6 +1220,14 @@ namespace Tool_Upload
                     LinkAnh = anh.ToString().Replace(@"src=""", "");
                     LinkAnh = LinkAnh.Replace(@"""", "");
 
+                    if (LinkAnh.ToLower().Contains("//proxy") == true)
+                    {
+                        if (LinkAnh.ToLower().Contains("http") == false)
+                        {
+                            LinkAnh = "https:" + LinkAnh;
+                        }
+                    }
+
                     try
                     {
                         if (Directory.Exists(DuongDan + "\\" + Ten) == false)
@@ -1356,6 +1404,14 @@ namespace Tool_Upload
                     LinkAnh = anh.ToString().Replace(@"<img src=""", "");
                     LinkAnh = LinkAnh.Replace(@"""", "");
 
+                    if (LinkAnh.ToLower().Contains("//proxy") == true)
+                    {
+                        if (LinkAnh.ToLower().Contains("http") == false)
+                        {
+                            LinkAnh = "https:" + LinkAnh;
+                        }
+                    }
+
                     try
                     {
                         if (Directory.Exists(DuongDan + "\\" + Ten) == false)
@@ -1530,6 +1586,14 @@ namespace Tool_Upload
                 {
                     LinkAnh = anh.ToString().Replace(@"src=""", "");
                     LinkAnh = LinkAnh.Replace(@"""", "");
+
+                    if (LinkAnh.ToLower().Contains("//proxy") == true)
+                    {
+                        if (LinkAnh.ToLower().Contains("http") == false)
+                        {
+                            LinkAnh = "https:" + LinkAnh;
+                        }
+                    }
 
                     try
                     {
@@ -1706,6 +1770,14 @@ namespace Tool_Upload
                 {
                     LinkAnh = anh.ToString().Replace(@"<img src=""", "").Replace(@"<img src='", "");
                     LinkAnh = LinkAnh.Replace(@"""", "").Replace("'", "").Trim();
+
+                    if (LinkAnh.ToLower().Contains("//proxy") == true)
+                    {
+                        if (LinkAnh.ToLower().Contains("http") == false)
+                        {
+                            LinkAnh = "https:" + LinkAnh;
+                        }
+                    }
 
                     try
                     {
@@ -1906,6 +1978,14 @@ namespace Tool_Upload
                     LinkAnh = anh.ToString().Replace(@"com"" src=""", "").Replace(@"<img src=""", "");
                     LinkAnh = LinkAnh.Replace(@"""", "");
 
+                    if (LinkAnh.ToLower().Contains("//proxy") == true)
+                    {
+                        if (LinkAnh.ToLower().Contains("http") == false)
+                        {
+                            LinkAnh = "https:" + LinkAnh;
+                        }
+                    }
+
                     try
                     {                       
                         if (Directory.Exists(DuongDan + "\\" + Ten) == false)
@@ -2082,6 +2162,14 @@ namespace Tool_Upload
                     LinkAnh = Regex.Match(anh.ToString(), @"src=""(.*?)""", RegexOptions.Singleline).Value;
                     LinkAnh = LinkAnh.Replace(@"src=""", "");
                     LinkAnh = LinkAnh.Replace(@"""", "");
+
+                    if (LinkAnh.ToLower().Contains("//proxy") == true)
+                    {
+                        if (LinkAnh.ToLower().Contains("http") == false)
+                        {
+                            LinkAnh = "https:" + LinkAnh;
+                        }
+                    }
 
                     try
                     {
@@ -2260,6 +2348,14 @@ namespace Tool_Upload
                     LinkAnh = LinkAnh.Replace(@"src=""", "");
                     LinkAnh = LinkAnh.Replace(@"""", "");
 
+                    if (LinkAnh.ToLower().Contains("//proxy") == true)
+                    {
+                        if (LinkAnh.ToLower().Contains("http") == false)
+                        {
+                            LinkAnh = "https:" + LinkAnh;
+                        }
+                    }
+
                     try
                     {
                         if (Directory.Exists(DuongDan + "\\" + Ten) == false)
@@ -2353,8 +2449,8 @@ namespace Tool_Upload
             {
                 TonTai = "Không";
 
-                var TenChuong = Regex.Matches(DanhSachChuong2[i].ToString(), @">(.*?)<", RegexOptions.Singleline);
-                Ten = TenChuong[0].ToString().Replace(@">", "");
+                var TenChuong = Regex.Matches(DanhSachChuong2[i].ToString(), @""">(.*?)<", RegexOptions.Singleline);
+                Ten = TenChuong[1].ToString().Replace(@""">", "");
                 Ten = Ten.Replace(@"<", "").Replace(Tentruyen, "").Replace("–", "").Trim();
 
                 i--;
@@ -2391,8 +2487,8 @@ namespace Tool_Upload
                 Link = Link.Replace(@"""", "");
 
                 //Lọc lấy tên chương
-                var TenChuong = Regex.Matches(DanhSachChuong2[i].ToString(), @">(.*?)<", RegexOptions.Singleline);
-                Ten = TenChuong[0].ToString().Replace(@">", "");
+                var TenChuong = Regex.Matches(DanhSachChuong2[i].ToString(), @""">(.*?)<", RegexOptions.Singleline);
+                Ten = TenChuong[1].ToString().Replace(@""">", "");
                 Ten = Ten.Replace(@"<", "").Replace(Tentruyen, "").Replace("–", "").Trim();
 
                 //Loại bỏ kí tự hạn chế trong tên
@@ -2434,6 +2530,14 @@ namespace Tool_Upload
                 {
                     LinkAnh = anh.ToString().Replace(@"<img src=""", "");
                     LinkAnh = LinkAnh.Replace(@"""", "");
+
+                    if (LinkAnh.ToLower().Contains("//proxy") == true)
+                    {
+                        if (LinkAnh.ToLower().Contains("http") == false)
+                        {
+                            LinkAnh = "https:" + LinkAnh;
+                        }
+                    }
 
                     try
                     {
@@ -2605,6 +2709,14 @@ namespace Tool_Upload
                 {
                     LinkAnh = anh.ToString().Replace(@"<img src=""", "");
                     LinkAnh = LinkAnh.Replace(@"""", "");
+
+                    if (LinkAnh.ToLower().Contains("//proxy") == true)
+                    {
+                        if (LinkAnh.ToLower().Contains("http") == false)
+                        {
+                            LinkAnh = "https:" + LinkAnh;
+                        }
+                    }
 
                     try
                     {
@@ -2788,6 +2900,14 @@ namespace Tool_Upload
                     LinkAnh = anh.ToString().Replace(@"><img class=""chapter-img"" src=""", "");
                     LinkAnh = LinkAnh.Replace(@"""", "");
 
+                    if (LinkAnh.ToLower().Contains("//proxy") == true)
+                    {
+                        if (LinkAnh.ToLower().Contains("http") == false)
+                        {
+                            LinkAnh = "https:" + LinkAnh;
+                        }
+                    }
+
                     try
                     {
                         if (Directory.Exists(DuongDan + "\\" + Ten) == false)
@@ -2957,6 +3077,14 @@ namespace Tool_Upload
                 {
                     LinkAnh = anh.ToString().Replace(@"><img class=""chapter-img"" src=""", "");
                     LinkAnh = LinkAnh.Replace(@"""", "");
+
+                    if (LinkAnh.ToLower().Contains("//proxy") == true)
+                    {
+                        if (LinkAnh.ToLower().Contains("http") == false)
+                        {
+                            LinkAnh = "https:" + LinkAnh;
+                        }
+                    }
 
                     try
                     {
@@ -3134,6 +3262,14 @@ namespace Tool_Upload
                 {
                     LinkAnh = anh.ToString().Replace(@"<img src=""", "");
                     LinkAnh = LinkAnh.Replace(@"""", "");
+
+                    if (LinkAnh.ToLower().Contains("//proxy") == true)
+                    {
+                        if (LinkAnh.ToLower().Contains("http") == false)
+                        {
+                            LinkAnh = "https:" + LinkAnh;
+                        }
+                    }
 
                     try
                     {
