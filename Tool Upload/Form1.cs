@@ -24,25 +24,24 @@ namespace Tool_Upload
 {
     public partial class Form1 : Form
     {
-        static ChromeDriver chromeDriver;
+        private static ChromeDriver chromeDriver;
 
-        Database DatabaseObject = new Database();
-        DatabaseBackup DatabaseObjectBackup = new DatabaseBackup();
-        DownloadImage DownloadImage = new DownloadImage();
+        private static Database DatabaseObject = new Database();
+        private static DownloadImage DownloadImage = new DownloadImage();
 
         [DllImport("User32.dll")]
-        internal static extern IntPtr SetForegroundWindow(IntPtr hWnd);
-        Process currentProcess = Process.GetCurrentProcess();
+        private static extern IntPtr SetForegroundWindow(IntPtr hWnd);
+        private static Process currentProcess = Process.GetCurrentProcess();
 
-        DataTable datatable = new DataTable();
-        DataTable datatableAutoLeech = new DataTable();
-        DataTable datatableHienThi = new DataTable();
+        private static DataTable datatable = new DataTable();
+        private static DataTable datatableAutoLeech = new DataTable();
+        private static DataTable datatableHienThi = new DataTable();
 
-        string IDCuaTruyen = "", NguonCuaTruyen = "", ChuongHienTaiCuaTruyen = "", TrangThaiLenDauTrang = "";
-        string LeechTruyen = "", ThayDoiThongTin = "", KetQua = "", KieuView = "%", CheDoNapDuLieu = "Không dùng";
-        int TreCuaTruyen = 0;
-        int TongSoBanGhi, TrangHienTai, TongSoTrang, KichThuocTrang = 20, ViTriDauTrang, ViTriCuoiTrang;
-        string DuongDanBackupMoiNhat = "",  NgayHienTai = "", NgayGuiMail = "";
+        private static string IDCuaTruyen = "", NguonCuaTruyen = "", ChuongHienTaiCuaTruyen = "", TrangThaiLenDauTrang = "";
+        private static string LeechTruyen = "", ThayDoiThongTin = "", KetQua = "", KieuView = "%", CheDoNapDuLieu = "Không dùng";
+        private static int TreCuaTruyen = 0;
+        private static int TongSoBanGhi, TrangHienTai, TongSoTrang, KichThuocTrang = 20, ViTriDauTrang, ViTriCuoiTrang;
+        private static string DuongDanBackupMoiNhat = "",  NgayHienTai = "", NgayGuiMail = "";
 
         public Form1()
         {
@@ -90,44 +89,22 @@ namespace Tool_Upload
             dtgvTruyen.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.None;
             dtgvTruyen.AllowUserToResizeRows = false;
             //dtgvTruyen.AllowUserToAddRows = false;
+            //test();
+
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
             panel1.Hide();
         }
 
-        #region Kiểm tra và bảo trì
+        #region Kiểm tra, nâng cấp và bảo trì
 
         void test()
         {
-            //string file = @"https://proxy.truyen.cloud/?data=3ue9+GoYorNt/mgZ7ApBsN+6X0gghHRM0V/O9dLhpmWGBJiULn9rQB/u1slD3YKg1lWpVCoxPtkkia++QbLGU09/FR8D/5dObz7PklcBfZe6boYC31aUC11jRqKbcq1F";
-            //WebClient client = new WebClient();
-            //client.Headers.Set("Referer", "http://www.nettruyen.com/truyen-tranh/sung-the-thanh-nghien-luc-thieu-sung-tu-day-long/chap-2/526686");
-            //client.DownloadFile(file, @"C:\Users\NBT\Desktop\test.webp");
+            
+            WebClient client = new WebClient();
+            //client.Headers.Set("Referer", "");
+            client.DownloadFile("https://daityteam.com/wp-content/uploads/WP-manga/data/manga_5d0924ece7978/a2a632008ac1036e71420947946bf935/1-(1).jpg", "C:\\Users\\NBT\\Desktop\\Test.webp");
 
-            //WebClient client = new WebClient();
-            //pictureBox1
-            //chromeDriver.Url = "https://blogtruyen.vn/22615";
-            //chromeDriver.Navigate();
-
-
-
-            //var ThoiGian = chromeDriver.FindElementByXPath(@"//*[@id=""frm_Pink""]/p[1]/input[2]");
-            //ThoiGian.SendKeys("1440");
-
-            //var Ghim = chromeDriver.FindElementById("btn_save_Pink");
-            //Ghim.Click();
-
-            //FileInfo FileConvert = new FileInfo("./Convert.html");
-            //string DuongDan = FileConvert.DirectoryName + "\\" + "Convert.html";
-            //DuongDan = DuongDan.Replace("\\", "/");
-            //rtbDanhSachLoi.Text = DuongDan;
-
-            //chromeDriver.Url = "https://blogtruyen.vn/admin/cap-nhat-chuong/408978";
-            //chromeDriver.Navigate();
-
-            //var InputFile = chromeDriver.FindElementById("chaptersFileupload");
-            ////string path = "C:\\UploadSample1.txt";
-            ////File f = detector.getLocalFile(path);
-            //InputFile.SendKeys("C:/Users/NBT/Downloads/Fix/Chapter 21/00.jpeg" + "\n");// + "\n" + "C:/Users/NBT/Downloads/Fix/1.jpeg");
 
 
         }
@@ -135,7 +112,12 @@ namespace Tool_Upload
         private void button7_Click(object sender, EventArgs e)
         {
             test();
-            //SendMail();
+            //SendMail();          
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("");
         }
 
         #endregion
@@ -242,7 +224,11 @@ namespace Tool_Upload
                         txtTenChuong.Clear();
                         txtTenChuong.SendKeys(TenChuongMoi);
                     }
-                    else if (TenChuong.ToLower().Contains(cbDoiTenThanh.Text.ToLower()) == false || cbDoiTenThanh.Text.Length == 0)
+                    else if (TenChuong.ToLower().Contains("chapter") == true && cbTenMuonDoi.Text.ToLower() == "chap")
+                    {
+                        
+                    }
+                    else 
                     {
                         TenChuongMoi = TenChuong.ToLower().Replace(cbTenMuonDoi.Text.ToLower(), cbDoiTenThanh.Text).Replace("  ", " ").Trim();
 
@@ -273,33 +259,34 @@ namespace Tool_Upload
 
         void SendMail(string Mail, string Body)
         {
-            MailMessage mail = new MailMessage();
-            SmtpClient SmtpServer = new SmtpClient("smtp.gmail.com");
+            //MailMessage mail = new MailMessage();
+            //SmtpClient SmtpServer = new SmtpClient("smtp.gmail.com");
 
-            mail.From = new MailAddress("editnbt@gmail.com");
-            mail.To.Add(Mail);
-            mail.Subject = "Database " + txtTaiKhoan.Text;
-            mail.Body = Body + DateTime.Now.ToString("dd/MM/yyyy");
+            //mail.From = new MailAddress("editnbt@gmail.com");
+            //mail.To.Add(Mail);
+            //mail.Subject = "Database " + txtTaiKhoan.Text;
+            //mail.Body = Body + DateTime.Now.ToString("dd/MM/yyyy");
 
-            BackUp();
+            //BackUp();
 
-            mail.Attachments.Add(new Attachment(DuongDanBackupMoiNhat));
+            //mail.Attachments.Add(new Attachment(DuongDanBackupMoiNhat));
 
-            SmtpServer.Port = 587;
-            SmtpServer.Credentials = new System.Net.NetworkCredential("editnbt@gmail.com", "tuannd007");
-            SmtpServer.EnableSsl = true;
+            //SmtpServer.Port = 587;
+            //SmtpServer.Credentials = new System.Net.NetworkCredential("editnbt@gmail.com", "tuannd007");
+            //SmtpServer.EnableSsl = true;
 
-            try
-            {
-                SmtpServer.Send(mail);
-                NgayGuiMail = NgayHienTai;
-            }
-            catch
-            { }
+            //try
+            //{
+            //    SmtpServer.Send(mail);
+            //    NgayGuiMail = NgayHienTai;
+            //}
+            //catch
+            //{ }
         }
 
         void Binding()
         {
+            //Thread.Sleep(TimeSpan.FromSeconds(1));
             txtIDTruyen.DataBindings.Clear();
             txtNguon.DataBindings.Clear();
             txtChuongHienTai.DataBindings.Clear();
@@ -515,7 +502,11 @@ namespace Tool_Upload
                 {
                     var update = chromeDriver.FindElementByClassName("btnUpdateEditor");
                     update.Click();                   
-                }               
+                }        
+                else
+                {
+                    break;
+                }
             }
 
             if (DemThoiGian < 180)
@@ -571,7 +562,14 @@ namespace Tool_Upload
             cbLenDauTrang.Text = LenDauTrang;
 
             //Tìm chương mới nhất trên Blogtruyen
-            ChuongHienTai = DownloadImage.KiemTraChuongHientai(IDTruyen, ChuongHienTai);
+            if(cbChuaCoChuong.Checked == false)
+            {
+                ChuongHienTai = DownloadImage.KiemTraChuongHientai(IDTruyen, ChuongHienTai);
+            }
+            else
+            {
+                ChuongHienTai = "";
+            }         
             string ChuongMoiNhat = ChuongHienTai;
 
             #region Bắt đầu
@@ -587,55 +585,58 @@ namespace Tool_Upload
             try
             {
                 if(Nguon.Contains("truyenqq.com") == true)
-                { KetQua = DownloadImage.TruyenQQ(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text); }
+                { KetQua = DownloadImage.TruyenQQ(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text, cbTaiTiepKhiLoi.Checked); }
 
                 else if(Nguon.Contains("hocvientruyentranh.net") == true)
-                { KetQua = DownloadImage.HocVienTruyenTranh(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text); }
+                { KetQua = DownloadImage.HocVienTruyenTranh(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text, cbTaiTiepKhiLoi.Checked); }
 
                 else if (Nguon.Contains("truyentranh.net") == true)
-                { KetQua = DownloadImage.TruyenTranhNet(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text); }
+                { KetQua = DownloadImage.TruyenTranhNet(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text, cbTaiTiepKhiLoi.Checked); }
 
                 else if (Nguon.Contains("truyentranhlh.net") == true)
-                { KetQua = DownloadImage.TruyenTranhLH(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text); }
+                { KetQua = DownloadImage.TruyenTranhLH(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text, cbTaiTiepKhiLoi.Checked); }
 
                 else if (Nguon.Contains("beeng.net") == true)
-                { KetQua = DownloadImage.Beeng(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text); }
+                { KetQua = DownloadImage.Beeng(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text, cbTaiTiepKhiLoi.Checked); }
 
-                else if (Nguon.Contains("ntruyen.info") == true)
-                { KetQua = DownloadImage.Ntruyen(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text); }
+                else if (Nguon.Contains("ntruyen.info") == true || Nguon.Contains("ntruyentranh.info") == true)
+                { KetQua = DownloadImage.Ntruyen(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text, cbTaiTiepKhiLoi.Checked); }
 
                 else if (Nguon.Contains("truyentranhtuan.com") == true)
-                { KetQua = DownloadImage.TruyenTranhTuan(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text); }
+                { KetQua = DownloadImage.TruyenTranhTuan(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text, cbTaiTiepKhiLoi.Checked); }
 
                 else if (Nguon.Contains("hamtruyen.com") == true)
-                { KetQua = DownloadImage.HamTruyen(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text); }
+                { KetQua = DownloadImage.HamTruyen(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text, cbTaiTiepKhiLoi.Checked); }
 
                 else if (Nguon.Contains("truyensieuhay.com") == true)
-                { KetQua = DownloadImage.TruyenSieuHay(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text); }
+                { KetQua = DownloadImage.TruyenSieuHay(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text, cbTaiTiepKhiLoi.Checked); }
 
-                else if (Nguon.Contains("nettruyen.com") == true)
-                { KetQua = DownloadImage.NetTruyen(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text); }
-
-                else if (Nguon.Contains("truyenchon.com") == true)
-                { KetQua = DownloadImage.TruyenChon (IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text); }
+                else if (Nguon.Contains("nettruyen.com") == true || Nguon.Contains("nhattruyen.com") == true)
+                { KetQua = DownloadImage.NetTruyen(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text, cbTaiTiepKhiLoi.Checked); }
 
                 else if (Nguon.Contains("truyenchon.com") == true)
-                { KetQua = DownloadImage.TruyenChon (IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text); }
+                { KetQua = DownloadImage.TruyenChon (IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text, cbTaiTiepKhiLoi.Checked); }
 
                 else if (Nguon.Contains("truyen48.com") == true)
-                { KetQua = DownloadImage.Truyen48 (IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text); }
+                { KetQua = DownloadImage.Truyen48 (IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text, cbTaiTiepKhiLoi.Checked); }
 
                 else if (Nguon.Contains("ocumeo.com") == true)
-                { KetQua = DownloadImage.OCuMeo(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text); }
+                { KetQua = DownloadImage.OCuMeo(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text, cbTaiTiepKhiLoi.Checked); }
 
                 else if (Nguon.Contains("truyen1.net") == true)
-                { KetQua = DownloadImage.Truyen1(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text); }
+                { KetQua = DownloadImage.Truyen1(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text, cbTaiTiepKhiLoi.Checked); }
 
                 else if (Nguon.Contains("a3manga.com") == true)
-                { KetQua = DownloadImage.A3Manga(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text); }
+                { KetQua = DownloadImage.A3Manga(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text, cbTaiTiepKhiLoi.Checked); }
 
                 else if (Nguon.Contains("ngonphongcomics.com") == true)
-                { KetQua = DownloadImage.NgonPhongComic(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text); }
+                { KetQua = DownloadImage.NgonPhongComic(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text, cbTaiTiepKhiLoi.Checked); }
+
+                else if (Nguon.Contains("otakusan.net") == true)
+                { KetQua = DownloadImage.Otakusan(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text, cbTaiTiepKhiLoi.Checked); }
+
+                else if (Nguon.Contains("ttmanga.com") == true)
+                { KetQua = DownloadImage.TTManga(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text, cbTaiTiepKhiLoi.Checked); }
 
                 else
                 { KetQua = "[Lỗi không hỗ trợ web nguồn này]:\n" + IDTruyen + " " + Nguon; }
@@ -645,7 +646,7 @@ namespace Tool_Upload
                 if (Directory.Exists(txtDuongDan.Text) == true)
                 { Directory.Delete(txtDuongDan.Text, true); }
 
-                KetQua = "[Lỗi nguồn hoặc thư mục liên kết đang bị sử dụng]:\n" + IDTruyen + " " + Nguon;
+                KetQua = "[Lỗi web nguồn hoặc thư mục liên kết đang bị sử dụng]:\n" + IDTruyen + " " + Nguon;
             }
 
             //Upload ảnh
@@ -710,6 +711,8 @@ namespace Tool_Upload
             rtbStatus.Text = HoanThanh + " " + IDTruyen;
             LeechTruyen = "";         
             rtbDanhSachLoi.ReadOnly = false;
+            cbChuaCoChuong.Checked = false;
+            cbTaiTiepKhiLoi.Checked = false;
 
             if (cbHienChrome.Checked == true)
             {
@@ -720,7 +723,7 @@ namespace Tool_Upload
             System.GC.Collect();
 
             #endregion
-        }
+        }       
 
         #endregion
 
@@ -807,7 +810,7 @@ namespace Tool_Upload
 
                 new Thread(() =>
                 {
-                    DatabaseObjectBackup.DatabaseConnect();
+                    DatabaseBackup DatabaseObjectBackup = new DatabaseBackup();
 
                     datatableAutoLeech.Clear();
 
@@ -1014,7 +1017,7 @@ namespace Tool_Upload
 
         private void btnSua_Click(object sender, EventArgs e)
         {
-            if (txtChuongHienTai.Text.Length > 0 && txtIDTruyen.Text.Length > 0 && txtNguon.Text.Length > 0 && cbTrangThai.Text.Length > 0)
+            if (txtIDTruyen.Text.Length > 0 && txtNguon.Text.Length > 0 && cbTrangThai.Text.Length > 0)
             {
                 if (MessageBox.Show("Bạn có chắc chắn muốn sửa thông tin truyện này ?", "Thông báo", MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
                 {
@@ -1315,7 +1318,11 @@ namespace Tool_Upload
 
         private void txtLinkNguon_TextChanged(object sender, EventArgs e)
         {
-            toolTip1.SetToolTip(txtLinkNguon, txtLinkNguon.Text);
+            try
+            {
+                toolTip1.SetToolTip(txtLinkNguon, txtLinkNguon.Text);
+            }
+            catch{ }            
         }
 
         private void btnTraCuu_Click(object sender, EventArgs e)
@@ -1326,16 +1333,19 @@ namespace Tool_Upload
             {               
                 List<string> ListWeb = new List<string>(txtListWeb.Text.Split(new string[] { "\n" }, StringSplitOptions.None));
 
+                int DoUuTien = 1;
                 foreach(string Web in ListWeb)
                 {
                     if(txtTraCuu.Text.Contains(Web))
                     {
-                        rtbStatus.Text = "Web này được hỗ trợ";
+                        rtbStatus.Text = "Web này được hỗ trợ\n" + "Xếp hạng ưu tiên: " + DoUuTien;
                         break;                       
                     }
+
+                    DoUuTien++;
                 }
 
-                if(rtbStatus.Text != "Web này được hỗ trợ")
+                if(rtbStatus.Text.Contains("Web này được hỗ trợ") == false)
                 {
                     rtbStatus.Text = "Web này không được hỗ trợ";
                 }
@@ -1474,15 +1484,23 @@ namespace Tool_Upload
 
         private void txtIDTruyen_TextChanged(object sender, EventArgs e)
         {
-            if (txtIDTruyen.Text.Length > 0)
+            //if (txtIDTruyen.Text.Length > 0)
+            //{
+            //    txtLink.Text = "https://blogtruyen.vn/" + txtIDTruyen.Text;
+            //    txtIDTruyenCanDoiTen.Text = txtIDTruyen.Text;
+            //}
+            //else
+            //{
+            //    txtLink.Text = "";
+            //}
+
+            try
             {
+                txtIDTruyen.Text = txtIDTruyen.Text.Trim();
                 txtLink.Text = "https://blogtruyen.vn/" + txtIDTruyen.Text;
                 txtIDTruyenCanDoiTen.Text = txtIDTruyen.Text;
             }
-            else
-            {
-                txtLink.Text = "";
-            }
+            catch { }
 
         }
 
@@ -1492,10 +1510,7 @@ namespace Tool_Upload
             {
                 txtLinkNguon.Text = txtNguon.Text;
             }
-            catch
-            {
-
-            }
+            catch{ }
         }
 
         private void txtLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)

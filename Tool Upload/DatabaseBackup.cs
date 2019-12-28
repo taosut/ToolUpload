@@ -12,7 +12,7 @@ namespace Tool_Upload
     {
         public SQLiteConnection MyConnection;
 
-        public void DatabaseConnect()
+        public DatabaseBackup()
         {
             MyConnection = new SQLiteConnection("Data source=DatabaseBackup.db");
         }
@@ -24,7 +24,10 @@ namespace Tool_Upload
 
         public void CloseConnection()
         {
-            MyConnection.Close();
+            MyConnection.Close();          
         }
+
+        ~DatabaseBackup()
+        { }
     }
 }

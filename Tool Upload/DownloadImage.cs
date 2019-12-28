@@ -1,12 +1,16 @@
-﻿using OpenQA.Selenium.Chrome;
+﻿using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 
@@ -15,9 +19,13 @@ namespace Tool_Upload
 {
     public class DownloadImage
     {
-        static List<string> ListDinhDang = new List<string>();
-        static List<string> ListHanChe = new List<string>();
-        static ChromeDriver chromeDriver;
+        private static List<string> ListDinhDang = new List<string>();
+        private static List<string> ListHanChe = new List<string>();
+        private static ChromeDriver chromeDriver;
+        //static Form1 form1 = new Form1();
+
+        private static int timeOut = 3;
+        public static int TimeOut { get => timeOut; set => timeOut = value; }
 
         public DownloadImage()
         {
@@ -41,11 +49,17 @@ namespace Tool_Upload
             service.HideCommandPromptWindow = true; //ẩn cửa sổ command
 
             ChromeOptions options = new ChromeOptions();
-            options.AddArgument("headless"); //ẩn cửa sổ chrome
+            options.AddArgument("headless"); //ẩn cửa sổ chrome           
+            options.AddArgument("--disable-web-security");
+            options.AddArgument("--allow-cross-origin-auth-prompt");
+            options.AddArgument("no-sandbox");
+            
+            chromeDriver = new ChromeDriver(service, options, TimeSpan.FromMinutes(TimeOut));
 
-            chromeDriver = new ChromeDriver(service, options);
-
+            //pbTienTrinh.Value = 10;
             #endregion
+
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
         }
 
         #region Hàm thiết lập
@@ -149,7 +163,7 @@ namespace Tool_Upload
 
         #region Download
 
-        public static string TruyenQQ (string IDTruyen, string Nguon, string ChuongHienTai, int Tre, string DuongDan)
+        public static string TruyenQQ (string IDTruyen, string Nguon, string ChuongHienTai, int Tre, string DuongDan, bool TaiTiepKhiLoi)
         {
             TaoDanhSachDinhDang();
 
@@ -173,9 +187,8 @@ namespace Tool_Upload
             int i = DanhSachChuong2.Count - 1;
 
             //Nếu danh sách rỗng tức là xảy ra lỗi không tương thích
-            if(i == 0)
+            if(i < 0)
             {
-                i = -1;
                 Ten = "[Lỗi tool không còn tương thích với web nguồn]\n" + IDTruyen + " " + Nguon;
             }
 
@@ -188,6 +201,12 @@ namespace Tool_Upload
                 var TenChuong = Regex.Matches(DanhSachChuong2[i].ToString(), @">(.*?)<", RegexOptions.Singleline);
                 Ten = TenChuong[0].ToString().Replace(@">", "");
                 Ten = Ten.Replace(@"<", "");
+
+                if (ChuongHienTai == "")
+                {
+                    ChuongHienTai = Ten;
+                    i++;
+                }
 
                 i--;
                
@@ -287,29 +306,29 @@ namespace Tool_Upload
                         { Directory.CreateDirectory(DuongDan + "\\" + Ten); }
 
                         WebClient client = new WebClient();
-                        client.Headers.Set("Referer", Link);
 
-                        if (DemAnh < 10)
-                        { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
-                        else
-                        { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
-                    }
-                    catch
-                    {
                         try
                         {
-                            if (Directory.Exists(DuongDan + "\\" + Ten) == false)
-                            { Directory.CreateDirectory(DuongDan + "\\" + Ten); }
-
-                            WebClient client = new WebClient();
-                            //client.Headers.Set("Referer", Link);
+                            if (DemAnh < 10)
+                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
+                            else
+                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
+                            
+                        }
+                        catch
+                        {
+                            client.Headers.Set("Referer", Link);
 
                             if (DemAnh < 10)
                             { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
                             else
                             { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
                         }
-                        catch
+                        
+                    }
+                    catch
+                    {
+                        if(TaiTiepKhiLoi == false)
                         {
                             if (Directory.Exists(DuongDan + "\\" + Ten) == true)
                             { Directory.Delete(DuongDan + "\\" + Ten, true); }
@@ -318,8 +337,7 @@ namespace Tool_Upload
                             Ten = "[Lỗi tải] " + IDTruyen + " " + Nguon + " " + Ten;
 
                             break;
-                        }
-
+                        }                        
                     }
 
                     DemAnh++;
@@ -333,7 +351,7 @@ namespace Tool_Upload
             return ChuongHienTai;
         }
 
-        public static string Truyen48(string IDTruyen, string Nguon, string ChuongHienTai, int Tre, string DuongDan)
+        public static string Truyen48 (string IDTruyen, string Nguon, string ChuongHienTai, int Tre, string DuongDan, bool TaiTiepKhiLoi)
         {
             TaoDanhSachDinhDang();
 
@@ -357,7 +375,7 @@ namespace Tool_Upload
             int i = DanhSachChuong2.Count - 1;
 
             //Nếu danh sách rỗng tức là xảy ra lỗi không tương thích
-            if (i == 0)
+            if (i < 0)
             {
                 i = -1;
                 Ten = "[Lỗi tool không còn tương thích với web nguồn]\n" + IDTruyen + " " + Nguon;
@@ -372,6 +390,12 @@ namespace Tool_Upload
                 var TenChuong = Regex.Matches(DanhSachChuong2[i].ToString(), @">(.*?)<", RegexOptions.Singleline);
                 Ten = TenChuong[0].ToString().Replace(@">", "");
                 Ten = Ten.Replace(@"<", "");
+
+                if (ChuongHienTai == "")
+                {
+                    ChuongHienTai = Ten;
+                    i++;
+                }
 
                 i--;
 
@@ -471,29 +495,29 @@ namespace Tool_Upload
                         { Directory.CreateDirectory(DuongDan + "\\" + Ten); }
 
                         WebClient client = new WebClient();
-                        client.Headers.Set("Referer", Link);
 
-                        if (DemAnh < 10)
-                        { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
-                        else
-                        { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
-                    }
-                    catch
-                    {
                         try
                         {
-                            if (Directory.Exists(DuongDan + "\\" + Ten) == false)
-                            { Directory.CreateDirectory(DuongDan + "\\" + Ten); }
+                            if (DemAnh < 10)
+                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
+                            else
+                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
 
-                            WebClient client = new WebClient();
-                            //client.Headers.Set("Referer", Link);
+                        }
+                        catch
+                        {
+                            client.Headers.Set("Referer", Link);
 
                             if (DemAnh < 10)
                             { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
                             else
                             { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
                         }
-                        catch
+
+                    }
+                    catch
+                    {
+                        if (TaiTiepKhiLoi == false)
                         {
                             if (Directory.Exists(DuongDan + "\\" + Ten) == true)
                             { Directory.Delete(DuongDan + "\\" + Ten, true); }
@@ -503,7 +527,6 @@ namespace Tool_Upload
 
                             break;
                         }
-
                     }
 
                     DemAnh++;
@@ -517,7 +540,7 @@ namespace Tool_Upload
             return ChuongHienTai;
         }
 
-        public static string TruyenTranhNet (string IDTruyen, string Nguon, string ChuongHienTai, int Tre, string DuongDan)
+        public static string TruyenTranhNet (string IDTruyen, string Nguon, string ChuongHienTai, int Tre, string DuongDan, bool TaiTiepKhiLoi)
         {
             TaoDanhSachDinhDang();
 
@@ -569,6 +592,12 @@ namespace Tool_Upload
                 var TenChuong = Regex.Matches(DanhSachChuong2[i].ToString(), @"title=""(.*?)""", RegexOptions.Singleline);
                 Ten = TenChuong[0].ToString().Replace(@"title=""", "");
                 Ten = Ten.Replace(@"""", "");
+
+                if (ChuongHienTai == "")
+                {
+                    ChuongHienTai = Ten;
+                    i--;
+                }
 
                 i++;
 
@@ -674,29 +703,29 @@ namespace Tool_Upload
                         { Directory.CreateDirectory(DuongDan + "\\" + Ten); }
 
                         WebClient client = new WebClient();
-                        client.Headers.Set("Referer", Link);
 
-                        if (DemAnh < 10)
-                        { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
-                        else
-                        { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
-                    }
-                    catch
-                    {
                         try
                         {
-                            if (Directory.Exists(DuongDan + "\\" + Ten) == false)
-                            { Directory.CreateDirectory(DuongDan + "\\" + Ten); }
+                            if (DemAnh < 10)
+                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
+                            else
+                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
 
-                            WebClient client = new WebClient();
-                            //client.Headers.Set("Referer", Link);
+                        }
+                        catch
+                        {
+                            client.Headers.Set("Referer", Link);
 
                             if (DemAnh < 10)
                             { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
                             else
                             { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
                         }
-                        catch
+
+                    }
+                    catch
+                    {
+                        if (TaiTiepKhiLoi == false)
                         {
                             if (Directory.Exists(DuongDan + "\\" + Ten) == true)
                             { Directory.Delete(DuongDan + "\\" + Ten, true); }
@@ -706,7 +735,6 @@ namespace Tool_Upload
 
                             break;
                         }
-
                     }
 
                     DemAnh++;
@@ -720,7 +748,7 @@ namespace Tool_Upload
             return ChuongHienTai;
         }
 
-        public static string TruyenTranhLH (string IDTruyen, string Nguon, string ChuongHienTai, int Tre, string DuongDan)
+        public static string TruyenTranhLH (string IDTruyen, string Nguon, string ChuongHienTai, int Tre, string DuongDan, bool TaiTiepKhiLoi)
         {
             TaoDanhSachDinhDang();
 
@@ -752,7 +780,7 @@ namespace Tool_Upload
             int i = DanhSachChuong2.Count - 1;
 
             //Nếu danh sách rỗng tức là xảy ra lỗi không tương thích
-            if (i == 0)
+            if (i < 0)
             {
                 i = -1;
                 Ten = "[Lỗi tool không còn tương thích với web nguồn]\n" + IDTruyen + " " + Nguon;
@@ -768,6 +796,12 @@ namespace Tool_Upload
                 Ten = TenChuong[0].ToString().Replace(@"<b>", "");
                 Ten = Ten.Replace(@"</b>", "");
                 Ten = Ten.ToLower().Replace(TenTruyen.ToLower(), "").Replace("-", "").Trim();
+
+                if (ChuongHienTai == "")
+                {
+                    ChuongHienTai = Ten;
+                    i++;
+                }
 
                 i--;
 
@@ -807,7 +841,7 @@ namespace Tool_Upload
                 var TenChuong = Regex.Matches(DanhSachChuong2[i].ToString(), @"<b>(.*?)</b>", RegexOptions.Singleline);
                 Ten = TenChuong[0].ToString().Replace(@"<b>", "");
                 Ten = Ten.Replace(@"</b>", "");
-                Ten = Ten.ToLower().Replace(TenTruyen.ToLower(), "").Replace("-", "").Trim();
+                Ten = Ten.ToLower().Replace(TenTruyen.ToLower(), "").Replace("- fix", "").Replace("-", "").Trim();
 
                 if (Ten.ToLower().Contains("raw") || Ten.ToLower().Contains("eng"))
                 {
@@ -826,83 +860,183 @@ namespace Tool_Upload
                     catch { }
                 }
 
-                //Lấy danh sách ảnh có trong chương
-                HttpClient httpClient2 = new HttpClient();
-                httpClient2.BaseAddress = new Uri(Link);
+                chromeDriver.Url = Link;
+                chromeDriver.Navigate();
 
-                string htmlDanhSachAnh = httpClient2.GetStringAsync("").Result;
+                //Chờ cho ảnh load hết
+                int Time = 0;
+                while (Time <= TimeOut * 60) //Giới hạn thời gian là timeOut phút
+                {
+                    var Wait = chromeDriver.ExecuteScript(@"return document.readyState") as string;
 
-                string DanhSachAnhPartem1 = @"<div class=""chapter-content"">(.*?)<!-- Before images -->";
-                var DanhSachAnh1 = Regex.Matches(htmlDanhSachAnh, DanhSachAnhPartem1, RegexOptions.Singleline);
+                    if (Wait == "complete")
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        Thread.Sleep(TimeSpan.FromSeconds(1));
+                    }
 
-                string DanhSachAnhPartem2 = @"<img class(.*?)>";
-                var DanhSachAnh2 = Regex.Matches(DanhSachAnh1[0].ToString(), DanhSachAnhPartem2, RegexOptions.Singleline);
+                    Time++;
+                }
+                if (Time >= TimeOut * 60) //Quá giới hạn thời gian thì ngừng leech
+                {
+                    Ten = "[Lỗi web nguồn]:\n" + IDTruyen + " " + Nguon;
+                    ChuongHienTai = Ten;
 
+                    break;
+                }
+
+                string LoaiHienThi = "";
+                List<IWebElement> ListAnh;
+
+                try
+                {
+                    var NoiDungChuong = chromeDriver.FindElementById("chapter-images");
+                    ListAnh = NoiDungChuong.FindElements(By.TagName("canvas")).ToList();
+                    LoaiHienThi = "canvas";
+                }
+                catch
+                {
+                    var NoiDungChuong = chromeDriver.FindElementByXPath("/html/body/div[6]");
+                    ListAnh = NoiDungChuong.FindElements(By.TagName("img")).ToList();
+                    LoaiHienThi = "img";
+                }
+                                             
                 //Nếu danh sách rỗng tức là xảy ra lỗi không tương thích
-                if (DanhSachAnh2.Count == 0)
+                if (ListAnh.Count == 0)
                 {
                     Ten = "[Lỗi tool không còn tương thích với web nguồn]\n" + IDTruyen + " " + Nguon;
                     ChuongHienTai = Ten;
-                    break;                   
+
+                    break;
+                }
+                else
+                {
+                    ListAnh.RemoveAt(ListAnh.Count-1);
                 }
 
                 DemAnh = 0;
 
                 //Tải các ảnh có trong chương
-                foreach (var anh in DanhSachAnh2)
+                foreach (IWebElement Anh in ListAnh)
                 {
-
-                    var LinkCuaAnh = Regex.Matches(anh.ToString(), @"src='(.*?)'", RegexOptions.Singleline);
-                    LinkAnh = LinkCuaAnh[0].ToString().Replace(@"src='", "");
-                    LinkAnh = LinkAnh.Replace(@"'", "");
-
-                    if (LinkAnh.ToLower().Contains("//proxy") == true)
+                    if (Directory.Exists(DuongDan + "\\" + Ten) == false)
+                    { Directory.CreateDirectory(DuongDan + "\\" + Ten); }
+                   
+                    if (LoaiHienThi == "canvas")
                     {
-                        if (LinkAnh.ToLower().Contains("http") == false)
+                        if(int.Parse(Anh.GetAttribute("width")) > 0 && int.Parse(Anh.GetAttribute("height")) > 0)
                         {
-                            LinkAnh = "https:" + LinkAnh;
+                            var base64string = chromeDriver.ExecuteScript(@"
+                            function getElementByXpath(path) 
+                            {
+                                return document.evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                            }
+                            var c = document.createElement('canvas');
+                            var ctx = c.getContext('2d');
+                            var img = getElementByXpath('" + @"//*[@id=""chapter-images""]/canvas[" + (DemAnh + 1) + "]" + @"');
+                            c.height= "+ Anh.GetAttribute("height") + @";
+                            c.width= "+ Anh.GetAttribute("width") + @";
+                            ctx.drawImage(img, 0, 0, "+ Anh.GetAttribute("width") + ", "+ Anh.GetAttribute("height") + @");
+                            var base64String = c.toDataURL();
+                            return base64String;
+                            ") as string;
+
+                            try
+                            {
+                                var base64 = base64string.Split(',').Last();
+                                using (var stream = new MemoryStream(Convert.FromBase64String(base64)))
+                                {
+                                    using (var bitmap = new Bitmap(stream))
+                                    {
+                                        if (DemAnh < 10)
+                                        { bitmap.Save(DuongDan + "\\" + Ten + "\\0" + DemAnh + ".png", ImageFormat.Png); }
+                                        else
+                                        { bitmap.Save(DuongDan + "\\" + Ten + "\\" + DemAnh + ".png", ImageFormat.Png); }
+                                    }
+                                }
+                            }
+                            catch
+                            {
+                                if (TaiTiepKhiLoi == false)
+                                {
+                                    if (Directory.Exists(DuongDan + "\\" + Ten) == true)
+                                    { Directory.Delete(DuongDan + "\\" + Ten, true); }
+
+                                    i = -1; //Tải thất bại thì gán i âm để ngừng vòng lặp ngoài
+                                    Ten = "[Lỗi tải] " + IDTruyen + " " + Nguon + " " + Ten;
+
+                                    break;
+                                }
+                            }
                         }
-                    }
-
-                    try
-                    {
-                        if (Directory.Exists(DuongDan + "\\" + Ten) == false)
-                        { Directory.CreateDirectory(DuongDan + "\\" + Ten); }
-
-                        WebClient client = new WebClient();
-                        client.Headers.Set("Referer", Link);
-
-                        if (DemAnh < 10)
-                        { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
                         else
-                        { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
+                        {
+                            if (TaiTiepKhiLoi == false)
+                            {
+                                if (Directory.Exists(DuongDan + "\\" + Ten) == true)
+                                { Directory.Delete(DuongDan + "\\" + Ten, true); }
+
+                                i = -1; //Tải thất bại thì gán i âm để ngừng vòng lặp ngoài
+                                Ten = "[Lỗi tải] " + IDTruyen + " " + Nguon + " " + Ten;
+
+                                break;
+                            }
+                        }                       
                     }
-                    catch
+                    else
                     {
+                        LinkAnh = Anh.GetAttribute("src");
+
+                        if (LinkAnh.ToLower().Contains("//proxy") == true)
+                        {
+                            if (LinkAnh.ToLower().Contains("http") == false)
+                            {
+                                LinkAnh = "https:" + LinkAnh;
+                            }
+                        }
+
                         try
                         {
                             if (Directory.Exists(DuongDan + "\\" + Ten) == false)
                             { Directory.CreateDirectory(DuongDan + "\\" + Ten); }
 
                             WebClient client = new WebClient();
-                            //client.Headers.Set("Referer", Link);
 
-                            if (DemAnh < 10)
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
-                            else
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
+                            try
+                            {
+                                if (DemAnh < 10)
+                                { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
+                                else
+                                { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
+
+                            }
+                            catch
+                            {
+                                client.Headers.Set("Referer", Link);
+
+                                if (DemAnh < 10)
+                                { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
+                                else
+                                { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
+                            }
+
                         }
                         catch
                         {
-                            if (Directory.Exists(DuongDan + "\\" + Ten) == true)
-                            { Directory.Delete(DuongDan + "\\" + Ten, true); }
+                            if (TaiTiepKhiLoi == false)
+                            {
+                                if (Directory.Exists(DuongDan + "\\" + Ten) == true)
+                                { Directory.Delete(DuongDan + "\\" + Ten, true); }
 
-                            i = -1; //Tải thất bại thì gán i âm để ngừng vòng lặp ngoài
-                            Ten = "[Lỗi tải] " + IDTruyen + " " + Nguon + " " + Ten;
+                                i = -1; //Tải thất bại thì gán i âm để ngừng vòng lặp ngoài
+                                Ten = "[Lỗi tải] " + IDTruyen + " " + Nguon + " " + Ten;
 
-                            break;
+                                break;
+                            }
                         }
-
                     }
 
                     DemAnh++;
@@ -916,7 +1050,7 @@ namespace Tool_Upload
             return ChuongHienTai;
         }
 
-        public static string Beeng (string IDTruyen, string Nguon, string ChuongHienTai, int Tre, string DuongDan)
+        public static string Beeng (string IDTruyen, string Nguon, string ChuongHienTai, int Tre, string DuongDan, bool TaiTiepKhiLoi)
         {
             TaoDanhSachDinhDang();
 
@@ -941,7 +1075,7 @@ namespace Tool_Upload
             int i = DanhSachChuong2.Count - 1;
 
             //Nếu danh sách rỗng tức là xảy ra lỗi không tương thích
-            if (i == 0)
+            if (i < 0)
             {
                 i = -1;
                 Ten = "[Lỗi tool không còn tương thích với web nguồn]\n" + IDTruyen + " " + Nguon;
@@ -956,6 +1090,12 @@ namespace Tool_Upload
                 var TenChuong = Regex.Matches(DanhSachChuong2[i].ToString(), @">(.*?)<", RegexOptions.Singleline);
                 Ten = TenChuong[0].ToString().Replace(@">", "");
                 Ten = Ten.Replace(@"<", "");
+
+                if (ChuongHienTai == "")
+                {
+                    ChuongHienTai = Ten;
+                    i++;
+                }
 
                 i--;
 
@@ -1050,29 +1190,29 @@ namespace Tool_Upload
                         { Directory.CreateDirectory(DuongDan + "\\" + Ten); }
 
                         WebClient client = new WebClient();
-                        client.Headers.Set("Referer", Link);
 
-                        if (DemAnh < 10)
-                        { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
-                        else
-                        { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
-                    }
-                    catch
-                    {
                         try
                         {
-                            if (Directory.Exists(DuongDan + "\\" + Ten) == false)
-                            { Directory.CreateDirectory(DuongDan + "\\" + Ten); }
+                            if (DemAnh < 10)
+                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
+                            else
+                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
 
-                            WebClient client = new WebClient();
-                            //client.Headers.Set("Referer", Link);
+                        }
+                        catch
+                        {
+                            client.Headers.Set("Referer", Link);
 
                             if (DemAnh < 10)
                             { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
                             else
                             { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
                         }
-                        catch
+
+                    }
+                    catch
+                    {
+                        if (TaiTiepKhiLoi == false)
                         {
                             if (Directory.Exists(DuongDan + "\\" + Ten) == true)
                             { Directory.Delete(DuongDan + "\\" + Ten, true); }
@@ -1082,7 +1222,6 @@ namespace Tool_Upload
 
                             break;
                         }
-
                     }
 
                     DemAnh++;
@@ -1096,14 +1235,16 @@ namespace Tool_Upload
             return ChuongHienTai;
         }
 
-        public static string Ntruyen (string IDTruyen, string Nguon, string ChuongHienTai, int Tre, string DuongDan)
+        public static string Ntruyen (string IDTruyen, string Nguon, string ChuongHienTai, int Tre, string DuongDan, bool TaiTiepKhiLoi)
         {
             TaoDanhSachDinhDang();
 
-            HttpClient httpClient = new HttpClient();
-            httpClient.BaseAddress = new Uri(Nguon);
+            chromeDriver.Url = Nguon;
+            chromeDriver.Navigate();
 
-            string htmlDanhSachChuong = httpClient.GetStringAsync("").Result;
+            chromeDriver.ExecuteScript("showChapter();");
+
+            string htmlDanhSachChuong = chromeDriver.PageSource;
 
             //Lấy danh sách chương có trong truyện
             string DanhSachChuongPartem1 = @"id=""MainContent_CenterContent_detailStoryControl_listChapter"" class=""listChapter"">(.*?)<script";
@@ -1120,7 +1261,7 @@ namespace Tool_Upload
             int i = DanhSachChuong2.Count - 1;
 
             //Nếu danh sách rỗng tức là xảy ra lỗi không tương thích
-            if (i == 0)
+            if (i < 0)
             {
                 i = -1;
                 Ten = "[Lỗi tool không còn tương thích với web nguồn]\n" + IDTruyen + " " + Nguon;
@@ -1135,6 +1276,12 @@ namespace Tool_Upload
                 var TenChuong = Regex.Matches(DanhSachChuong2[i].ToString(), @""">(.*?)<", RegexOptions.Singleline);
                 Ten = TenChuong[1].ToString().Replace(@""">", "");
                 Ten = Ten.Replace(@"<", "");
+
+                if (ChuongHienTai == "")
+                {
+                    ChuongHienTai = Ten;
+                    i++;
+                }
 
                 i--;
 
@@ -1234,29 +1381,29 @@ namespace Tool_Upload
                         { Directory.CreateDirectory(DuongDan + "\\" + Ten); }
 
                         WebClient client = new WebClient();
-                        client.Headers.Set("Referer", Link);
 
-                        if (DemAnh < 10)
-                        { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
-                        else
-                        { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
-                    }
-                    catch
-                    {
                         try
                         {
-                            if (Directory.Exists(DuongDan + "\\" + Ten) == false)
-                            { Directory.CreateDirectory(DuongDan + "\\" + Ten); }
+                            if (DemAnh < 10)
+                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
+                            else
+                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
 
-                            WebClient client = new WebClient();
-                            //client.Headers.Set("Referer", Link);
+                        }
+                        catch
+                        {
+                            client.Headers.Set("Referer", Link);
 
                             if (DemAnh < 10)
                             { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
                             else
                             { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
                         }
-                        catch
+
+                    }
+                    catch
+                    {
+                        if (TaiTiepKhiLoi == false)
                         {
                             if (Directory.Exists(DuongDan + "\\" + Ten) == true)
                             { Directory.Delete(DuongDan + "\\" + Ten, true); }
@@ -1266,7 +1413,6 @@ namespace Tool_Upload
 
                             break;
                         }
-
                     }
 
                     DemAnh++;
@@ -1280,7 +1426,7 @@ namespace Tool_Upload
             return ChuongHienTai;
         }
 
-        public static string HocVienTruyenTranh (string IDTruyen, string Nguon, string ChuongHienTai, int Tre, string DuongDan)
+        public static string HocVienTruyenTranh (string IDTruyen, string Nguon, string ChuongHienTai, int Tre, string DuongDan, bool TaiTiepKhiLoi)
         {
             TaoDanhSachDinhDang();
 
@@ -1304,7 +1450,7 @@ namespace Tool_Upload
             int i = DanhSachChuong2.Count - 1;
 
             //Nếu danh sách rỗng tức là xảy ra lỗi không tương thích
-            if (i == 0)
+            if (i < 0)
             {
                 i = -1;
                 Ten = "[Lỗi tool không còn tương thích với web nguồn]\n" + IDTruyen + " " + Nguon;
@@ -1319,6 +1465,12 @@ namespace Tool_Upload
                 var TenChuong = Regex.Matches(DanhSachChuong2[i].ToString(), @"title=""(.*?)""", RegexOptions.Singleline);
                 Ten = TenChuong[0].ToString().Replace(@"title=""", "");
                 Ten = Ten.Replace(@"""", "");
+
+                if (ChuongHienTai == "")
+                {
+                    ChuongHienTai = Ten;
+                    i++;
+                }
 
                 i--;               
 
@@ -1418,29 +1570,29 @@ namespace Tool_Upload
                         { Directory.CreateDirectory(DuongDan + "\\" + Ten); }
 
                         WebClient client = new WebClient();
-                        client.Headers.Set("Referer", Link);
 
-                        if (DemAnh < 10)
-                        { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
-                        else
-                        { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
-                    }
-                    catch
-                    {
                         try
                         {
-                            if (Directory.Exists(DuongDan + "\\" + Ten) == false)
-                            { Directory.CreateDirectory(DuongDan + "\\" + Ten); }
+                            if (DemAnh < 10)
+                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
+                            else
+                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
 
-                            WebClient client = new WebClient();
-                            //client.Headers.Set("Referer", Link);
+                        }
+                        catch
+                        {
+                            client.Headers.Set("Referer", Link);
 
                             if (DemAnh < 10)
                             { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
                             else
                             { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
                         }
-                        catch
+
+                    }
+                    catch
+                    {
+                        if (TaiTiepKhiLoi == false)
                         {
                             if (Directory.Exists(DuongDan + "\\" + Ten) == true)
                             { Directory.Delete(DuongDan + "\\" + Ten, true); }
@@ -1450,7 +1602,6 @@ namespace Tool_Upload
 
                             break;
                         }
-
                     }
 
                     DemAnh++;
@@ -1464,7 +1615,7 @@ namespace Tool_Upload
             return ChuongHienTai;
         }      
 
-        public static string TruyenTranhTuan (string IDTruyen, string Nguon, string ChuongHienTai, int Tre, string DuongDan)
+        public static string TruyenTranhTuan (string IDTruyen, string Nguon, string ChuongHienTai, int Tre, string DuongDan, bool TaiTiepKhiLoi)
         {
             TaoDanhSachDinhDang();
 
@@ -1493,7 +1644,7 @@ namespace Tool_Upload
             int i = DanhSachChuong2.Count - 1;
 
             //Nếu danh sách rỗng tức là xảy ra lỗi không tương thích
-            if (i == 0)
+            if (i < 0)
             {
                 i = -1;
                 Ten = "[Lỗi tool không còn tương thích với web nguồn]\n" + IDTruyen + " " + Nguon;
@@ -1508,6 +1659,12 @@ namespace Tool_Upload
                 var TenChuong = Regex.Matches(DanhSachChuong2[i].ToString(), @">(.*?)<", RegexOptions.Singleline);
                 Ten = TenChuong[0].ToString().Replace(@">", "").Replace(@"<", "");
                 Ten = Ten.Replace(TenTruyen, "").Trim();
+
+                if (ChuongHienTai == "")
+                {
+                    ChuongHienTai = Ten;
+                    i++;
+                }
 
                 i--;
 
@@ -1601,29 +1758,29 @@ namespace Tool_Upload
                         { Directory.CreateDirectory(DuongDan + "\\" + Ten); }
 
                         WebClient client = new WebClient();
-                        client.Headers.Set("Referer", Link);
 
-                        if (DemAnh < 10)
-                        { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
-                        else
-                        { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
-                    }
-                    catch
-                    {
                         try
                         {
-                            if (Directory.Exists(DuongDan + "\\" + Ten) == false)
-                            { Directory.CreateDirectory(DuongDan + "\\" + Ten); }
+                            if (DemAnh < 10)
+                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
+                            else
+                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
 
-                            WebClient client = new WebClient();
-                            //client.Headers.Set("Referer", Link);
+                        }
+                        catch
+                        {
+                            client.Headers.Set("Referer", Link);
 
                             if (DemAnh < 10)
                             { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
                             else
                             { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
                         }
-                        catch
+
+                    }
+                    catch
+                    {
+                        if (TaiTiepKhiLoi == false)
                         {
                             if (Directory.Exists(DuongDan + "\\" + Ten) == true)
                             { Directory.Delete(DuongDan + "\\" + Ten, true); }
@@ -1633,7 +1790,6 @@ namespace Tool_Upload
 
                             break;
                         }
-
                     }
 
                     DemAnh++;
@@ -1647,7 +1803,7 @@ namespace Tool_Upload
             return ChuongHienTai;
         }
 
-        public static string HamTruyen (string IDTruyen, string Nguon, string ChuongHienTai, int Tre, string DuongDan)
+        public static string HamTruyen (string IDTruyen, string Nguon, string ChuongHienTai, int Tre, string DuongDan, bool TaiTiepKhiLoi)
         {
             TaoDanhSachDinhDang();
 
@@ -1671,7 +1827,7 @@ namespace Tool_Upload
             int i = DanhSachChuong2.Count - 1;
 
             //Nếu danh sách rỗng tức là xảy ra lỗi không tương thích
-            if (i == 0)
+            if (i < 0)
             {
                 i = -1;
                 Ten = "[Lỗi tool không còn tương thích với web nguồn]\n" + IDTruyen + " " + Nguon;
@@ -1686,6 +1842,12 @@ namespace Tool_Upload
                 var TenChuong = Regex.Matches(DanhSachChuong2[i].ToString(), @">(.*?)<", RegexOptions.Singleline);
                 Ten = TenChuong[0].ToString().Replace(@">", "");
                 Ten = Ten.Replace(@"<", "");
+
+                if (ChuongHienTai == "")
+                {
+                    ChuongHienTai = Ten;
+                    i++;
+                }
 
                 i--;
 
@@ -1785,29 +1947,29 @@ namespace Tool_Upload
                         { Directory.CreateDirectory(DuongDan + "\\" + Ten); }
 
                         WebClient client = new WebClient();
-                        client.Headers.Set("Referer", Link);
 
-                        if (DemAnh < 10)
-                        { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
-                        else
-                        { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
-                    }
-                    catch
-                    {
                         try
                         {
-                            if (Directory.Exists(DuongDan + "\\" + Ten) == false)
-                            { Directory.CreateDirectory(DuongDan + "\\" + Ten); }
+                            if (DemAnh < 10)
+                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
+                            else
+                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
 
-                            WebClient client = new WebClient();
-                            //client.Headers.Set("Referer", Link);
+                        }
+                        catch
+                        {
+                            client.Headers.Set("Referer", Link);
 
                             if (DemAnh < 10)
                             { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
                             else
                             { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
                         }
-                        catch
+
+                    }
+                    catch
+                    {
+                        if (TaiTiepKhiLoi == false)
                         {
                             if (Directory.Exists(DuongDan + "\\" + Ten) == true)
                             { Directory.Delete(DuongDan + "\\" + Ten, true); }
@@ -1817,7 +1979,6 @@ namespace Tool_Upload
 
                             break;
                         }
-
                     }
 
                     DemAnh++;
@@ -1831,7 +1992,7 @@ namespace Tool_Upload
             return ChuongHienTai;
         }
 
-        public static string TruyenSieuHay (string IDTruyen, string Nguon, string ChuongHienTai, int Tre, string DuongDan)
+        public static string TruyenSieuHay (string IDTruyen, string Nguon, string ChuongHienTai, int Tre, string DuongDan, bool TaiTiepKhiLoi)
         {
             TaoDanhSachDinhDang();
 
@@ -1877,7 +2038,7 @@ namespace Tool_Upload
             int i = ListChuong.Count - 1;
 
             //Nếu danh sách rỗng tức là xảy ra lỗi không tương thích
-            if (i == 0)
+            if (i < 0)
             {
                 i = -1;
                 Ten = "[Lỗi tool không còn tương thích với web nguồn]\n" + IDTruyen + " " + Nguon;
@@ -1892,6 +2053,12 @@ namespace Tool_Upload
                 var TenChuong = Regex.Matches(ListChuong[i].ToString(), @">(.*?)<", RegexOptions.Singleline);
                 Ten = TenChuong[0].ToString().Replace(@">", "");
                 Ten = Ten.Replace(@"<", "");
+
+                if (ChuongHienTai == "")
+                {
+                    ChuongHienTai = Ten;
+                    i++;
+                }
 
                 i--;
 
@@ -1987,34 +2154,34 @@ namespace Tool_Upload
                     }
 
                     try
-                    {                       
+                    {
                         if (Directory.Exists(DuongDan + "\\" + Ten) == false)
                         { Directory.CreateDirectory(DuongDan + "\\" + Ten); }
 
                         WebClient client = new WebClient();
-                        client.Headers.Set("Referer", Link);
 
-                        if (DemAnh < 10)
-                        { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
-                        else
-                        { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
-                    }
-                    catch
-                    {
                         try
                         {
-                            if (Directory.Exists(DuongDan + "\\" + Ten) == false)
-                            { Directory.CreateDirectory(DuongDan + "\\" + Ten); }
+                            if (DemAnh < 10)
+                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
+                            else
+                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
 
-                            WebClient client = new WebClient();
-                            //client.Headers.Set("Referer", Link);
+                        }
+                        catch
+                        {
+                            client.Headers.Set("Referer", Link);
 
                             if (DemAnh < 10)
                             { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
                             else
                             { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
                         }
-                        catch
+
+                    }
+                    catch
+                    {
+                        if (TaiTiepKhiLoi == false)
                         {
                             if (Directory.Exists(DuongDan + "\\" + Ten) == true)
                             { Directory.Delete(DuongDan + "\\" + Ten, true); }
@@ -2024,7 +2191,6 @@ namespace Tool_Upload
 
                             break;
                         }
-                        
                     }
 
                     DemAnh++;
@@ -2038,7 +2204,7 @@ namespace Tool_Upload
             return ChuongHienTai;
         }
 
-        public static string NetTruyen (string IDTruyen, string Nguon, string ChuongHienTai, int Tre, string DuongDan)
+        public static string NetTruyen (string IDTruyen, string Nguon, string ChuongHienTai, int Tre, string DuongDan, bool TaiTiepKhiLoi)
         {
             TaoDanhSachDinhDang();
 
@@ -2062,7 +2228,7 @@ namespace Tool_Upload
             int i = DanhSachChuong2.Count - 1;
 
             //Nếu danh sách rỗng tức là xảy ra lỗi không tương thích
-            if (i == 0)
+            if (i < 0)
             {
                 i = -1;
                 Ten = "[Lỗi tool không còn tương thích với web nguồn]\n" + IDTruyen + " " + Nguon;
@@ -2077,6 +2243,12 @@ namespace Tool_Upload
                 var TenChuong = Regex.Matches(DanhSachChuong2[i].ToString(), @">(.*?)<", RegexOptions.Singleline);
                 Ten = TenChuong[1].ToString().Replace(@">", "");
                 Ten = Ten.Replace(@"<", "");
+
+                if(ChuongHienTai == "")
+                {
+                    ChuongHienTai = Ten;
+                    i++;
+                }
 
                 i--;
 
@@ -2139,7 +2311,7 @@ namespace Tool_Upload
 
                 string htmlDanhSachAnh = chromeDriver.PageSource;
 
-                string DanhSachAnhPartem1 = @"<div class=""reading-detail box_doc"">(.*?)<script src=""http://";
+                string DanhSachAnhPartem1 = @"<div class=""reading-detail box_doc"">(.*?)<div class=""container mrt5"">";
                 var DanhSachAnh1 = Regex.Matches(htmlDanhSachAnh, DanhSachAnhPartem1, RegexOptions.Singleline);
 
                 string DanhSachAnhPartem2 = @"<div id=""page(.*?)"" data-original";
@@ -2162,6 +2334,8 @@ namespace Tool_Upload
                     LinkAnh = Regex.Match(anh.ToString(), @"src=""(.*?)""", RegexOptions.Singleline).Value;
                     LinkAnh = LinkAnh.Replace(@"src=""", "");
                     LinkAnh = LinkAnh.Replace(@"""", "");
+                    
+                    LinkAnh = HttpUtility.HtmlDecode(LinkAnh);
 
                     if (LinkAnh.ToLower().Contains("//proxy") == true)
                     {
@@ -2177,29 +2351,29 @@ namespace Tool_Upload
                         { Directory.CreateDirectory(DuongDan + "\\" + Ten); }
 
                         WebClient client = new WebClient();
-                        client.Headers.Set("Referer", Link);
 
-                        if (DemAnh < 10)
-                        { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
-                        else
-                        { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
-                    }
-                    catch
-                    {
                         try
                         {
-                            if (Directory.Exists(DuongDan + "\\" + Ten) == false)
-                            { Directory.CreateDirectory(DuongDan + "\\" + Ten); }
+                            if (DemAnh < 10)
+                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
+                            else
+                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
 
-                            WebClient client = new WebClient();
-                            //client.Headers.Set("Referer", Link);
+                        }
+                        catch
+                        {
+                            client.Headers.Set("Referer", Link);
 
                             if (DemAnh < 10)
                             { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
                             else
                             { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
                         }
-                        catch
+
+                    }
+                    catch
+                    {
+                        if (TaiTiepKhiLoi == false)
                         {
                             if (Directory.Exists(DuongDan + "\\" + Ten) == true)
                             { Directory.Delete(DuongDan + "\\" + Ten, true); }
@@ -2209,7 +2383,6 @@ namespace Tool_Upload
 
                             break;
                         }
-
                     }
 
                     DemAnh++;
@@ -2223,7 +2396,7 @@ namespace Tool_Upload
             return ChuongHienTai;
         }
 
-        public static string TruyenChon (string IDTruyen, string Nguon, string ChuongHienTai, int Tre, string DuongDan)
+        public static string TruyenChon (string IDTruyen, string Nguon, string ChuongHienTai, int Tre, string DuongDan, bool TaiTiepKhiLoi)
         {
             TaoDanhSachDinhDang();
 
@@ -2247,7 +2420,7 @@ namespace Tool_Upload
             int i = DanhSachChuong2.Count - 1;
 
             //Nếu danh sách rỗng tức là xảy ra lỗi không tương thích
-            if (i == 0)
+            if (i < 0)
             {
                 i = -1;
                 Ten = "[Lỗi tool không còn tương thích với web nguồn]\n" + IDTruyen + " " + Nguon;
@@ -2262,6 +2435,12 @@ namespace Tool_Upload
                 var TenChuong = Regex.Matches(DanhSachChuong2[i].ToString(), @">(.*?)<", RegexOptions.Singleline);
                 Ten = TenChuong[0].ToString().Replace(@">", "");
                 Ten = Ten.Replace(@"<", "");
+
+                if (ChuongHienTai == "")
+                {
+                    ChuongHienTai = Ten;
+                    i++;
+                }
 
                 i--;
 
@@ -2362,29 +2541,29 @@ namespace Tool_Upload
                         { Directory.CreateDirectory(DuongDan + "\\" + Ten); }
 
                         WebClient client = new WebClient();
-                        client.Headers.Set("Referer", Link);
 
-                        if (DemAnh < 10)
-                        { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
-                        else
-                        { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
-                    }
-                    catch
-                    {
                         try
                         {
-                            if (Directory.Exists(DuongDan + "\\" + Ten) == false)
-                            { Directory.CreateDirectory(DuongDan + "\\" + Ten); }
+                            if (DemAnh < 10)
+                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
+                            else
+                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
 
-                            WebClient client = new WebClient();
-                            //client.Headers.Set("Referer", Link);
+                        }
+                        catch
+                        {
+                            client.Headers.Set("Referer", Link);
 
                             if (DemAnh < 10)
                             { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
                             else
                             { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
                         }
-                        catch
+
+                    }
+                    catch
+                    {
+                        if (TaiTiepKhiLoi == false)
                         {
                             if (Directory.Exists(DuongDan + "\\" + Ten) == true)
                             { Directory.Delete(DuongDan + "\\" + Ten, true); }
@@ -2394,7 +2573,6 @@ namespace Tool_Upload
 
                             break;
                         }
-
                     }
 
                     DemAnh++;
@@ -2408,7 +2586,7 @@ namespace Tool_Upload
             return ChuongHienTai;
         }
 
-        public static string OCuMeo (string IDTruyen, string Nguon, string ChuongHienTai, int Tre, string DuongDan)
+        public static string OCuMeo (string IDTruyen, string Nguon, string ChuongHienTai, int Tre, string DuongDan, bool TaiTiepKhiLoi)
         {
             TaoDanhSachDinhDang();
 
@@ -2437,7 +2615,7 @@ namespace Tool_Upload
             int i = DanhSachChuong2.Count - 1;
 
             //Nếu danh sách rỗng tức là xảy ra lỗi không tương thích
-            if (i == 0)
+            if (i < 0)
             {
                 i = -1;
                 Ten = "[Lỗi tool không còn tương thích với web nguồn]\n" + IDTruyen + " " + Nguon;
@@ -2452,6 +2630,12 @@ namespace Tool_Upload
                 var TenChuong = Regex.Matches(DanhSachChuong2[i].ToString(), @""">(.*?)<", RegexOptions.Singleline);
                 Ten = TenChuong[1].ToString().Replace(@""">", "");
                 Ten = Ten.Replace(@"<", "").Replace(Tentruyen, "").Replace("–", "").Trim();
+
+                if (ChuongHienTai == "")
+                {
+                    ChuongHienTai = Ten;
+                    i++;
+                }
 
                 i--;
 
@@ -2508,7 +2692,7 @@ namespace Tool_Upload
 
                 string htmlDanhSachAnh = chromeDriver.PageSource;
 
-                string DanhSachAnhPartem1 = @"<section id=""view-chapter(.*?)</section>";
+                string DanhSachAnhPartem1 = @"id=""view-chapter(.*?)</section>";
                 var DanhSachAnh1 = Regex.Matches(htmlDanhSachAnh, DanhSachAnhPartem1, RegexOptions.Singleline);
 
                 string DanhSachAnhPartem2 = @"<img src=""(.*?)""";
@@ -2545,29 +2729,29 @@ namespace Tool_Upload
                         { Directory.CreateDirectory(DuongDan + "\\" + Ten); }
 
                         WebClient client = new WebClient();
-                        client.Headers.Set("Referer", Link);
 
-                        if (DemAnh < 10)
-                        { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
-                        else
-                        { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
-                    }
-                    catch
-                    {
                         try
                         {
-                            if (Directory.Exists(DuongDan + "\\" + Ten) == false)
-                            { Directory.CreateDirectory(DuongDan + "\\" + Ten); }
+                            if (DemAnh < 10)
+                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
+                            else
+                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
 
-                            WebClient client = new WebClient();
-                            //client.Headers.Set("Referer", Link);
+                        }
+                        catch
+                        {
+                            client.Headers.Set("Referer", Link);
 
                             if (DemAnh < 10)
                             { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
                             else
                             { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
                         }
-                        catch
+
+                    }
+                    catch
+                    {
+                        if (TaiTiepKhiLoi == false)
                         {
                             if (Directory.Exists(DuongDan + "\\" + Ten) == true)
                             { Directory.Delete(DuongDan + "\\" + Ten, true); }
@@ -2577,7 +2761,6 @@ namespace Tool_Upload
 
                             break;
                         }
-
                     }
 
                     DemAnh++;
@@ -2591,7 +2774,7 @@ namespace Tool_Upload
             return ChuongHienTai;
         }
 
-        public static string Truyen1 (string IDTruyen, string Nguon, string ChuongHienTai, int Tre, string DuongDan)
+        public static string Truyen1 (string IDTruyen, string Nguon, string ChuongHienTai, int Tre, string DuongDan, bool TaiTiepKhiLoi)
         {
             TaoDanhSachDinhDang();
 
@@ -2615,7 +2798,7 @@ namespace Tool_Upload
             int i = DanhSachChuong2.Count - 1;
 
             //Nếu danh sách rỗng tức là xảy ra lỗi không tương thích
-            if (i == 0)
+            if (i < 0)
             {
                 i = -1;
                 Ten = "[Lỗi tool không còn tương thích với web nguồn]\n" + IDTruyen + " " + Nguon;
@@ -2630,6 +2813,12 @@ namespace Tool_Upload
                 var TenChuong = Regex.Matches(DanhSachChuong2[i].ToString(), @">(.*?)<", RegexOptions.Singleline);
                 Ten = TenChuong[1].ToString().Replace(@">", "");
                 Ten = Ten.Replace(@"<", "");
+
+                if (ChuongHienTai == "")
+                {
+                    ChuongHienTai = Ten;
+                    i++;
+                }
 
                 i--;
 
@@ -2724,29 +2913,29 @@ namespace Tool_Upload
                         { Directory.CreateDirectory(DuongDan + "\\" + Ten); }
 
                         WebClient client = new WebClient();
-                        client.Headers.Set("Referer", Link);
 
-                        if (DemAnh < 10)
-                        { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
-                        else
-                        { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
-                    }
-                    catch
-                    {
                         try
                         {
-                            if (Directory.Exists(DuongDan + "\\" + Ten) == false)
-                            { Directory.CreateDirectory(DuongDan + "\\" + Ten); }
+                            if (DemAnh < 10)
+                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
+                            else
+                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
 
-                            WebClient client = new WebClient();
-                            //client.Headers.Set("Referer", Link);
+                        }
+                        catch
+                        {
+                            client.Headers.Set("Referer", Link);
 
                             if (DemAnh < 10)
                             { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
                             else
                             { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
                         }
-                        catch
+
+                    }
+                    catch
+                    {
+                        if (TaiTiepKhiLoi == false)
                         {
                             if (Directory.Exists(DuongDan + "\\" + Ten) == true)
                             { Directory.Delete(DuongDan + "\\" + Ten, true); }
@@ -2756,7 +2945,6 @@ namespace Tool_Upload
 
                             break;
                         }
-
                     }
 
                     DemAnh++;
@@ -2770,7 +2958,7 @@ namespace Tool_Upload
             return ChuongHienTai;
         }
 
-        public static string A3Manga (string IDTruyen, string Nguon, string ChuongHienTai, int Tre, string DuongDan)
+        public static string A3Manga (string IDTruyen, string Nguon, string ChuongHienTai, int Tre, string DuongDan, bool TaiTiepKhiLoi)
         {
             TaoDanhSachDinhDang();
 
@@ -2798,7 +2986,7 @@ namespace Tool_Upload
             int i = DanhSachChuong2.Count - 1;
 
             //Nếu danh sách rỗng tức là xảy ra lỗi không tương thích
-            if (i == 0)
+            if (i < 0)
             {
                 i = -1;
                 Ten = "[Lỗi tool không còn tương thích với web nguồn]\n" + IDTruyen + " " + Nguon;
@@ -2814,6 +3002,12 @@ namespace Tool_Upload
                 Ten = TenChuong[0].ToString().Replace(@">", "");
                 Ten = Ten.Replace(@"<", "");
                 Ten = Ten.Replace(TenTruyen, "").Replace("–", "").Trim();
+
+                if (ChuongHienTai == "")
+                {
+                    ChuongHienTai = Ten;
+                    i++;
+                }
 
                 i--;
                 
@@ -2914,29 +3108,29 @@ namespace Tool_Upload
                         { Directory.CreateDirectory(DuongDan + "\\" + Ten); }
 
                         WebClient client = new WebClient();
-                        client.Headers.Set("Referer", Link);
 
-                        if (DemAnh < 10)
-                        { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
-                        else
-                        { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
-                    }
-                    catch
-                    {
                         try
                         {
-                            if (Directory.Exists(DuongDan + "\\" + Ten) == false)
-                            { Directory.CreateDirectory(DuongDan + "\\" + Ten); }
+                            if (DemAnh < 10)
+                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
+                            else
+                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
 
-                            WebClient client = new WebClient();
-                            //client.Headers.Set("Referer", Link);
+                        }
+                        catch
+                        {
+                            client.Headers.Set("Referer", Link);
 
                             if (DemAnh < 10)
                             { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
                             else
                             { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
                         }
-                        catch
+
+                    }
+                    catch
+                    {
+                        if (TaiTiepKhiLoi == false)
                         {
                             if (Directory.Exists(DuongDan + "\\" + Ten) == true)
                             { Directory.Delete(DuongDan + "\\" + Ten, true); }
@@ -2946,7 +3140,6 @@ namespace Tool_Upload
 
                             break;
                         }
-
                     }
 
                     DemAnh++;
@@ -2960,7 +3153,7 @@ namespace Tool_Upload
             return ChuongHienTai;
         }
 
-        public static string NgonPhongComic (string IDTruyen, string Nguon, string ChuongHienTai, int Tre, string DuongDan)
+        public static string NgonPhongComic (string IDTruyen, string Nguon, string ChuongHienTai, int Tre, string DuongDan, bool TaiTiepKhiLoi)
         {
             TaoDanhSachDinhDang();
 
@@ -2984,7 +3177,7 @@ namespace Tool_Upload
             int i = DanhSachChuong2.Count - 1;
 
             //Nếu danh sách rỗng tức là xảy ra lỗi không tương thích
-            if (i == 0)
+            if (i < 0)
             {
                 i = -1;
                 Ten = "[Lỗi tool không còn tương thích với web nguồn]\n" + IDTruyen + " " + Nguon;
@@ -2999,6 +3192,12 @@ namespace Tool_Upload
                 var TenChuong = Regex.Matches(DanhSachChuong2[i].ToString(), @">(.*?)<", RegexOptions.Singleline);
                 Ten = TenChuong[0].ToString().Replace(@">", "");
                 Ten = Ten.Replace(@"<", "");
+
+                if (ChuongHienTai == "")
+                {
+                    ChuongHienTai = Ten;
+                    i++;
+                }
 
                 i--;
 
@@ -3092,29 +3291,29 @@ namespace Tool_Upload
                         { Directory.CreateDirectory(DuongDan + "\\" + Ten); }
 
                         WebClient client = new WebClient();
-                        client.Headers.Set("Referer", Link);
 
-                        if (DemAnh < 10)
-                        { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
-                        else
-                        { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
-                    }
-                    catch
-                    {
                         try
                         {
-                            if (Directory.Exists(DuongDan + "\\" + Ten) == false)
-                            { Directory.CreateDirectory(DuongDan + "\\" + Ten); }
+                            if (DemAnh < 10)
+                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
+                            else
+                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
 
-                            WebClient client = new WebClient();
-                            //client.Headers.Set("Referer", Link);
+                        }
+                        catch
+                        {
+                            client.Headers.Set("Referer", Link);
 
                             if (DemAnh < 10)
                             { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
                             else
                             { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
                         }
-                        catch
+
+                    }
+                    catch
+                    {
+                        if (TaiTiepKhiLoi == false)
                         {
                             if (Directory.Exists(DuongDan + "\\" + Ten) == true)
                             { Directory.Delete(DuongDan + "\\" + Ten, true); }
@@ -3124,7 +3323,6 @@ namespace Tool_Upload
 
                             break;
                         }
-
                     }
 
                     DemAnh++;
@@ -3138,8 +3336,7 @@ namespace Tool_Upload
             return ChuongHienTai;
         }
 
-        //Coming soon
-        public static string TTManga(string IDTruyen, string Nguon, string ChuongHienTai, int Tre, string DuongDan)
+        public static string Otakusan (string IDTruyen, string Nguon, string ChuongHienTai, int Tre, string DuongDan, bool TaiTiepKhiLoi)
         {
             TaoDanhSachDinhDang();
 
@@ -3148,9 +3345,280 @@ namespace Tool_Upload
 
             string htmlDanhSachChuong = httpClient.GetStringAsync("").Result;
 
-            //Lấy tên truyện
-            string TenTruyen= Regex.Match(htmlDanhSachChuong, @"itemprop=""name(.*?)>", RegexOptions.Singleline).Value;
-            TenTruyen = TenTruyen.Replace(@"itemprop=""name"" content=""", "").Replace(@""">",""); ;
+            //Lấy danh sách chương có trong truyện
+            string DanhSachChuongPartem1 = @"<table class=""table mdi-table table-clickable-td"">(.*?)</table>";
+            var DanhSachChuong1 = Regex.Matches(htmlDanhSachChuong, DanhSachChuongPartem1, RegexOptions.Singleline);
+
+            string DanhSachChuongPartem2 = @"<a title=(.*?)</a>";
+            var DanhSachChuong2 = Regex.Matches(DanhSachChuong1[0].ToString(), DanhSachChuongPartem2, RegexOptions.Singleline);
+
+            string Ten = "";
+            string Link, LinkAnh = "";
+            int DemAnh = 0;
+
+            //int i = DanhSachChuong2.Count -  1 - Tre; //Giới hạn danh sách với độ trễ (giới hạn cuối tùy kiểu danh sách)
+            int i = DanhSachChuong2.Count - 1;
+
+            //Nếu danh sách rỗng tức là xảy ra lỗi không tương thích
+            if (i < 0)
+            {
+                i = -1;
+                Ten = "[Lỗi tool không còn tương thích với web nguồn]\n" + IDTruyen + " " + Nguon;
+            }
+
+            //Tìm tới vị trí chương hiện tại và bắt đầu từ chương kế sau
+            string TonTai = "null";
+            while (i >= 0 + Tre) //Giới hạn danh sách với độ trễ (giới hạn đầu tùy kiểu danh sách)
+            {
+                TonTai = "Không";
+
+                var TenChuong = Regex.Matches(DanhSachChuong2[i].ToString(), @">(.*?)</a>", RegexOptions.Singleline);
+                Ten = TenChuong[0].ToString().Replace(@">", "");
+                Ten = Ten.Replace(@"</a", "");
+
+                if (ChuongHienTai == "")
+                {
+                    ChuongHienTai = Ten;
+                    i++;
+                }
+
+                if (ChuongHienTai == "")
+                {
+                    ChuongHienTai = Ten;
+                    i++;
+                }
+
+                i--;
+
+                //Loại bỏ kí tự hạn chế trong tên
+                foreach (string KiTu in ListHanChe)
+                {
+                    try
+                    {
+                        ChuongHienTai = ChuongHienTai.Replace(KiTu, "");
+                        Ten = Ten.Replace(KiTu, "");
+                    }
+                    catch { }
+                }
+
+                if (Ten.ToLower().Replace("  ", " ").Trim() == ChuongHienTai.ToLower().Replace("  ", " ").Trim())
+                {
+                    TonTai = "Có";
+                    break;
+                }
+            }
+
+            if (TonTai == "Không")
+            {
+                ChuongHienTai = "[Lỗi tên chương 2 bên không tương đồng]\n" + IDTruyen + " " + ChuongHienTai + "\n" + Nguon + " " + Ten;
+            }
+
+            //Tải anh có trong chương
+            while (i >= 0 + Tre) //Giới hạn danh sách với độ trễ
+            {
+                //Lọc lấy link chương
+                var LinkChuong = Regex.Matches(DanhSachChuong2[i].ToString(), @"href=""(.*?)""", RegexOptions.Singleline);
+                Link = LinkChuong[0].ToString().Replace(@"href=""", "");
+                Link = Link.Replace(@"""", "");
+                Link = "https://otakusan.net" + Link;
+
+                //Lọc lấy tên chương
+                var TenChuong = Regex.Matches(DanhSachChuong2[i].ToString(), @">(.*?)</a>", RegexOptions.Singleline);
+                Ten = TenChuong[0].ToString().Replace(@">", "");
+                Ten = Ten.Replace(@"</a", "");
+
+                if (Ten.ToLower().Contains("raw") || Ten.ToLower().Contains("eng") || Ten.ToLower().Contains("english"))
+                {
+                    ChuongHienTai = "[Chương này có vẻ là raw hoặc eng]\n" + " " + IDTruyen + " " + Nguon + " " + Ten;
+                    break;
+                }
+
+                //Loại bỏ kí tự hạn chế trong tên
+                foreach (string KiTu in ListHanChe)
+                {
+                    try
+                    {
+                        ChuongHienTai = ChuongHienTai.Replace(KiTu, "");
+                        Ten = Ten.Replace(KiTu, "");
+                    }
+                    catch { }
+                }
+
+                
+                chromeDriver.Url = Link;
+                chromeDriver.Navigate();
+
+                //Chờ cho ảnh load hết
+                int Time = 0;
+                while(Time <= TimeOut*60) //Giới hạn thời gian là timeOut phút
+                {
+                    try
+                    {
+                        var process = chromeDriver.FindElementByXPath(@"//*[@id=""chapter-container""]/div[2]");
+                        Thread.Sleep(TimeSpan.FromSeconds(1));
+                    }
+                    catch
+                    {
+                        break;
+                    }
+
+                    Time++;
+                }  
+                if(Time >= TimeOut*60) //Quá giới hạn thời gian thì ngừng leech
+                {
+                    Ten = "[Lỗi web nguồn]:\n" + IDTruyen + " " + Nguon;
+                    ChuongHienTai = Ten;
+
+                    break;
+                }
+
+                var NoiDungChuong = chromeDriver.FindElementById("rendering");
+
+                List<IWebElement> ListAnh = NoiDungChuong.FindElements(By.TagName("img")).ToList();
+
+                //Nếu danh sách rỗng tức là xảy ra lỗi không tương thích
+                if (ListAnh.Count == 0)
+                {
+                    Ten = "[Lỗi tool không còn tương thích với web nguồn]\n" + IDTruyen + " " + Nguon;
+                    ChuongHienTai = Ten;
+
+                    break;
+                }
+
+                DemAnh = 0;
+
+                //Tải các ảnh có trong chương
+                foreach (IWebElement Anh in ListAnh)
+                {
+                    if (Directory.Exists(DuongDan + "\\" + Ten) == false)
+                    { Directory.CreateDirectory(DuongDan + "\\" + Ten); }
+
+                    LinkAnh = Anh.GetAttribute("src");
+
+                    if(LinkAnh.Contains("blob:"))
+                    {
+                        var base64string = chromeDriver.ExecuteScript(@"
+                        function getElementByXpath(path) 
+                        {
+                            return document.evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                        }
+                        var c = document.createElement('canvas');
+                        var ctx = c.getContext('2d');
+                        var img = getElementByXpath('" + @"//*[@id=""rendering""]/img[" + (DemAnh + 1) + "]" + @"');
+                        c.height= img.naturalHeight;
+                        c.width= img.naturalWidth;
+                        ctx.drawImage(img, 0, 0, img.naturalWidth, img.naturalHeight);
+                        var base64String = c.toDataURL();
+                        return base64String;
+                        ") as string;
+
+                        try
+                        {
+                            var base64 = base64string.Split(',').Last();
+                            using (var stream = new MemoryStream(Convert.FromBase64String(base64)))
+                            {
+                                using (var bitmap = new Bitmap(stream))
+                                {
+                                    if (DemAnh < 10)
+                                    { bitmap.Save(DuongDan + "\\" + Ten + "\\0" + DemAnh + ".png", ImageFormat.Png); }
+                                    else
+                                    { bitmap.Save(DuongDan + "\\" + Ten + "\\" + DemAnh + ".png", ImageFormat.Png); }
+                                }
+                            }
+                        }
+                        catch
+                        {
+                            if (TaiTiepKhiLoi == false)
+                            {
+                                if (Directory.Exists(DuongDan + "\\" + Ten) == true)
+                                { Directory.Delete(DuongDan + "\\" + Ten, true); }
+
+                                i = -1; //Tải thất bại thì gán i âm để ngừng vòng lặp ngoài
+                                Ten = "[Lỗi tải] " + IDTruyen + " " + Nguon + " " + Ten;
+
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (LinkAnh.ToLower().Contains("//proxy") == true)
+                        {
+                            if (LinkAnh.ToLower().Contains("http") == false)
+                            {
+                                LinkAnh = "https:" + LinkAnh;
+                            }
+                        }
+
+                        try
+                        {
+                            if (Directory.Exists(DuongDan + "\\" + Ten) == false)
+                            { Directory.CreateDirectory(DuongDan + "\\" + Ten); }
+
+                            WebClient client = new WebClient();
+
+                            try
+                            {
+                                if (DemAnh < 10)
+                                { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
+                                else
+                                { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
+
+                            }
+                            catch
+                            {
+                                client.Headers.Set("Referer", Link);
+
+                                if (DemAnh < 10)
+                                { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
+                                else
+                                { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
+                            }
+
+                        }
+                        catch
+                        {
+                            if (TaiTiepKhiLoi == false)
+                            {
+                                if (Directory.Exists(DuongDan + "\\" + Ten) == true)
+                                { Directory.Delete(DuongDan + "\\" + Ten, true); }
+
+                                i = -1; //Tải thất bại thì gán i âm để ngừng vòng lặp ngoài
+                                Ten = "[Lỗi tải] " + IDTruyen + " " + Nguon + " " + Ten;
+
+                                break;
+                            }
+                        }
+                    }
+                    
+                    DemAnh++;
+                }
+
+                ChuongHienTai = Ten; //Cập nhật lại "chương hiện tại"
+
+                i--;
+            }
+
+            return ChuongHienTai;
+        }
+
+        public static string TTManga (string IDTruyen, string Nguon, string ChuongHienTai, int Tre, string DuongDan, bool TaiTiepKhiLoi)
+        {
+            TaoDanhSachDinhDang();
+
+            chromeDriver.Url = Nguon;
+            chromeDriver.Navigate();
+
+            if(chromeDriver.Url.Contains("Warning"))
+            {
+                var TiepTuc = chromeDriver.FindElementById("aYes");
+                TiepTuc.Click();
+            }
+
+            string htmlDanhSachChuong = chromeDriver.PageSource;
+
+            var Name = chromeDriver.FindElementByXPath(@"//*[@id=""leftside""]/div[1]/div[2]/div[2]/a[1]/h1");
+            string TenTruyen = Name.GetAttribute("innerHTML");
 
             //Lấy danh sách chương có trong truyện
             string DanhSachChuongPartem1 = @"<tbody>(.*?)</tbody>";
@@ -3167,7 +3635,7 @@ namespace Tool_Upload
             int i = DanhSachChuong2.Count - 1;
 
             //Nếu danh sách rỗng tức là xảy ra lỗi không tương thích
-            if (i == 0)
+            if (i < 0)
             {
                 i = -1;
                 Ten = "[Lỗi tool không còn tương thích với web nguồn]\n" + IDTruyen + " " + Nguon;
@@ -3182,6 +3650,12 @@ namespace Tool_Upload
                 var TenChuong = Regex.Matches(DanhSachChuong2[i].ToString(), @">(.*?)<", RegexOptions.Singleline);
                 Ten = TenChuong[0].ToString().Replace(">", "");
                 Ten = Ten.Replace("<", "").Replace(TenTruyen,"").Trim();
+
+                if (ChuongHienTai == "")
+                {
+                    ChuongHienTai = Ten;
+                    i++;
+                }
 
                 i--;
 
@@ -3232,22 +3706,16 @@ namespace Tool_Upload
                     catch { }
                 }
 
-
-                //Ngừng
                 //Lấy danh sách ảnh có trong chương
-                HttpClient httpClient2 = new HttpClient();
-                httpClient2.BaseAddress = new Uri(Link);
+                chromeDriver.Url = Link;
+                chromeDriver.Navigate();
 
-                string htmlDanhSachAnh = httpClient2.GetStringAsync("").Result;
+                var NoiDungChuong = chromeDriver.FindElementById("divImage");
 
-                string DanhSachAnhPartem1 = @"<div class=""manga-container"">(.*?)<div  align=""center"" class=""quang-cao-cuoi-trang"">";
-                var DanhSachAnh1 = Regex.Matches(htmlDanhSachAnh, DanhSachAnhPartem1, RegexOptions.Singleline);
-
-                string DanhSachAnhPartem2 = @"<img src=""(.*?)""";
-                var DanhSachAnh2 = Regex.Matches(DanhSachAnh1[0].ToString(), DanhSachAnhPartem2, RegexOptions.Singleline);
+                List<IWebElement> ListAnh = NoiDungChuong.FindElements(By.TagName("img")).ToList();
 
                 //Nếu danh sách rỗng tức là xảy ra lỗi không tương thích
-                if (DanhSachAnh2.Count == 0)
+                if (ListAnh.Count == 0)
                 {
                     Ten = "[Lỗi tool không còn tương thích với web nguồn]\n" + IDTruyen + " " + Nguon;
                     ChuongHienTai = Ten;
@@ -3258,10 +3726,9 @@ namespace Tool_Upload
                 DemAnh = 0;
 
                 //Tải các ảnh có trong chương
-                foreach (var anh in DanhSachAnh2)
+                foreach (IWebElement anh in ListAnh)
                 {
-                    LinkAnh = anh.ToString().Replace(@"<img src=""", "");
-                    LinkAnh = LinkAnh.Replace(@"""", "");
+                    LinkAnh = anh.GetAttribute("src");
 
                     if (LinkAnh.ToLower().Contains("//proxy") == true)
                     {
@@ -3277,29 +3744,29 @@ namespace Tool_Upload
                         { Directory.CreateDirectory(DuongDan + "\\" + Ten); }
 
                         WebClient client = new WebClient();
-                        client.Headers.Set("Referer", Link);
 
-                        if (DemAnh < 10)
-                        { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
-                        else
-                        { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
-                    }
-                    catch
-                    {
                         try
                         {
-                            if (Directory.Exists(DuongDan + "\\" + Ten) == false)
-                            { Directory.CreateDirectory(DuongDan + "\\" + Ten); }
+                            if (DemAnh < 10)
+                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
+                            else
+                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
 
-                            WebClient client = new WebClient();
-                            //client.Headers.Set("Referer", Link);
+                        }
+                        catch
+                        {
+                            client.Headers.Set("Referer", Link);
 
                             if (DemAnh < 10)
                             { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
                             else
                             { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
                         }
-                        catch
+
+                    }
+                    catch
+                    {
+                        if (TaiTiepKhiLoi == false)
                         {
                             if (Directory.Exists(DuongDan + "\\" + Ten) == true)
                             { Directory.Delete(DuongDan + "\\" + Ten, true); }
@@ -3309,7 +3776,6 @@ namespace Tool_Upload
 
                             break;
                         }
-
                     }
 
                     DemAnh++;
