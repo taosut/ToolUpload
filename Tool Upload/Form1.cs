@@ -139,7 +139,7 @@ namespace Tool_Upload
             }
             else
             {
-                options.AddArgument("--window-size=1134,569");
+                options.AddArgument("--start-maximized");
             }
 
             chromeDriver = new ChromeDriver(service, options);
@@ -431,7 +431,7 @@ namespace Tool_Upload
             }
         }
 
-        static string Upload(string IDTruyen, string DuongDan, string LenDauTrang, string Nguon)
+        public string Upload(string IDTruyen, string DuongDan, string LenDauTrang, string Nguon)
         {
             string ListFile = "", KetQua = "", ChuongMoiNhat = "";
             int i, DemThoiGian = 0;
@@ -445,13 +445,23 @@ namespace Tool_Upload
                 DemThoiGian = 0;
                 ChuongMoiNhat = ThuMuc.ToString();
 
-                //Đi tới trang thêm mới chương
-                chromeDriver.Url = "https://blogtruyen.vn/admin/them-moi-chuong/" + IDTruyen;
+                //Đi tới trang quản lí chương
+                chromeDriver.Url = "https://blogtruyen.vn/admin/quan-ly-chuong/" + IDTruyen;
                 chromeDriver.Navigate();
+
+                var ThemChuong = chromeDriver.FindElementByClassName("btn-success");
+                ThemChuong.Click();
+
+                ////Đi tới trang thêm mới chương
+                //chromeDriver.Url = "https://blogtruyen.vn/admin/them-moi-chuong/" + IDTruyen;
+                //chromeDriver.Navigate();
 
                 //Điền tên chương
                 var username = chromeDriver.FindElementById("Title");
                 username.SendKeys(ThuMuc.ToString());
+
+                var CapNhatURL = chromeDriver.FindElementByClassName("btnEditChangeUrl");
+                CapNhatURL.Click();
 
                 //Tạo danh sách ảnh cho chương
                 i = 0; //Kiểm tra xem có phải ảnh đầu tiên trong list không
@@ -470,16 +480,27 @@ namespace Tool_Upload
                 }
 
                 //Gửi danh sách file
-                var InputFile = chromeDriver.FindElementById("chaptersFileupload");
-                InputFile.SendKeys(ListFile);
-
+                try
+                {
+                    var InputFile = chromeDriver.FindElementById("chaptersFileupload");
+                    InputFile.SendKeys(ListFile);
+                }
+                catch
+                {
+                    var InputFile = chromeDriver.FindElementById("chapterCaptionFileupload");
+                    InputFile.SendKeys(ListFile);
+                }
+                
                 //cơ chế đợi để ấn nút cập nhật
                 Thread.Sleep(TimeSpan.FromSeconds(1));
                 i = 0;
                 while (i < 3)
                 {
-                    var process = chromeDriver.FindElementByClassName("progress-bar-success");
-                    if (process.Displayed == false)
+                    var Process = chromeDriver.FindElementByClassName("progress-bar-success");
+                    
+                    //var Wait = chromeDriver.ExecuteScript(@"return document.readyState") as string;
+
+                    if (Process.Displayed == false)// && Wait == "complete")
                     {
                         break;
                     }
@@ -498,9 +519,10 @@ namespace Tool_Upload
 
                 }
 
-                if(DemThoiGian < 180)
+                if (DemThoiGian < 180)
                 {
                     var update = chromeDriver.FindElementByClassName("btnUpdateEditor");
+                    //var Scroll = chromeDriver.ExecuteScript(@"window.scrollTo(0, document.body.scrollHeight)");
                     update.Click();                   
                 }        
                 else
@@ -511,7 +533,6 @@ namespace Tool_Upload
 
             if (DemThoiGian < 180)
             {
-                //Cập nhật lên đầu trang
                 var SuaTruyen = chromeDriver.FindElementByClassName("btn-success");
                 SuaTruyen.Click();
 

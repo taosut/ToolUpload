@@ -57,7 +57,7 @@ namespace Tool_Upload
             chromeDriver = new ChromeDriver(service, options, TimeSpan.FromMinutes(TimeOut));
 
             //pbTienTrinh.Value = 10;
-            #endregion
+            #endregion            
 
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
         }
@@ -1533,7 +1533,7 @@ namespace Tool_Upload
 
                 string htmlDanhSachAnh = httpClient2.GetStringAsync("").Result;
 
-                string DanhSachAnhPartem1 = @"<div class=""manga-container"">(.*?)<div  align=""center"" class=""quang-cao-cuoi-trang"">";
+                string DanhSachAnhPartem1 = @"<div class=""manga-container"">(.*?)<div align=""center"" class=""quang-cao-cuoi-trang"">";
                 var DanhSachAnh1 = Regex.Matches(htmlDanhSachAnh, DanhSachAnhPartem1, RegexOptions.Singleline);
 
                 string DanhSachAnhPartem2 = @"<img src=""(.*?)""";
