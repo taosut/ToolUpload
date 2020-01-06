@@ -63,3 +63,6 @@ E:\Code\GitHub\ToolUpload\Tool Upload\obj\Debug\Tool Upload.csproj.CoreCompileIn
 E:\Code\GitHub\ToolUpload\Tool Upload\obj\Debug\Tool Upload.csproj.CopyComplete
 E:\Code\GitHub\ToolUpload\Tool Upload\obj\Debug\Tool Upload.exe
 E:\Code\GitHub\ToolUpload\Tool Upload\obj\Debug\Tool Upload.pdb
+E:\Code\GitHub\ToolUpload\Tool Upload\bin\Debug\HtmlAgilityPack.dll
+E:\Code\GitHub\ToolUpload\Tool Upload\bin\Debug\HtmlAgilityPack.pdb
+E:\Code\GitHub\ToolUpload\Tool Upload\bin\Debug\HtmlAgilityPack.xml

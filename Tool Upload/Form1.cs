@@ -19,6 +19,7 @@ using System.Runtime.InteropServices;
 using System.Net;
 using System.Drawing.Imaging;
 using System.Net.Mail;
+using System.Drawing.Drawing2D;
 
 namespace Tool_Upload
 {
@@ -42,6 +43,7 @@ namespace Tool_Upload
         private static int TreCuaTruyen = 0;
         private static int TongSoBanGhi, TrangHienTai, TongSoTrang, KichThuocTrang = 20, ViTriDauTrang, ViTriCuoiTrang;
         private static string DuongDanBackupMoiNhat = "",  NgayHienTai = "", NgayGuiMail = "";
+        private static double Limit = 4000000.0;
 
         public Form1()
         {
@@ -132,6 +134,7 @@ namespace Tool_Upload
             service.HideCommandPromptWindow = true; //ẩn cửa sổ command
 
             ChromeOptions options = new ChromeOptions();
+            //options.AddArgument("path profile");
 
             if (cbHienChrome.Checked == false)
             {
@@ -431,7 +434,46 @@ namespace Tool_Upload
             }
         }
 
-        public string Upload(string IDTruyen, string DuongDan, string LenDauTrang, string Nguon)
+        Image ResizeImage(double Size, string FilePath, Boolean NenLanDau)
+        {
+            Image img = Image.FromFile(FilePath);
+
+            // lấy chiều rộng và chiều cao ban đầu của ảnh
+            int OriginalW = img.Width;
+            int OriginalH = img.Height;
+
+            // lấy chiều rộng và chiều cao mới tương ứng với chiều rộng truyền vào của ảnh (nó sẽ giúp ảnh của chúng ta sau khi resize vần giứ được độ cân đối của tấm ảnh            
+            int NewH = int.Parse(Math.Round(Math.Sqrt((1.0) * OriginalH * OriginalH)).ToString());
+
+            if(NenLanDau == false)
+            {
+                NewH = int.Parse(Math.Round(Math.Sqrt((1.0 - (Size - Limit) / Size) * OriginalH * OriginalH)).ToString());
+            }
+
+            int NewW = NewH * OriginalW / OriginalH;
+
+            // tạo một Bitmap có kích thước tương ứng với chiều rộng và chiều cao mới
+            Bitmap bmp = new Bitmap(NewW, NewH);
+
+            // tạo mới một đối tượng từ Bitmap
+            Graphics graphic = Graphics.FromImage((Image)bmp);
+            graphic.InterpolationMode = InterpolationMode.High;
+
+            // vẽ lại ảnh với kích thước mới
+            graphic.DrawImage(img, 0, 0, NewW, NewH);
+
+            // gải phóng resource cho đối tượng graphic
+            graphic.Dispose();
+
+            //Xóa ảnh cũ
+            img.Dispose();
+            File.Delete(FilePath);
+
+            // trả về anh sau khi đã resize
+            return (Image)bmp;
+        }
+
+        string Upload(string IDTruyen, string DuongDan, string LenDauTrang, string Nguon)
         {
             string ListFile = "", KetQua = "", ChuongMoiNhat = "";
             int i, DemThoiGian = 0;
@@ -465,17 +507,40 @@ namespace Tool_Upload
 
                 //Tạo danh sách ảnh cho chương
                 i = 0; //Kiểm tra xem có phải ảnh đầu tiên trong list không
+                string ImagePath = "";
                 string[] file = System.IO.Directory.GetFiles(DuongDan + "\\" + ThuMuc.ToString(), "*.*", SearchOption.TopDirectoryOnly);
+                Boolean NenLanDau = true;
                 foreach (string Anh in file)
                 {
-                    if(i == 0)
+                    ImagePath = Anh;
+
+                    //Kiểm tra dung lượng ảnh
+                    FileInfo FI = new FileInfo(ImagePath);
+                    NenLanDau = true;
+                    while (FI.Length > Limit)
                     {
-                        ListFile = ListFile + Anh.Replace("\\", "/");
+                        if(NenLanDau == true)
+                        {                         
+                            ResizeImage(FI.Length, ImagePath, true).Save(ImagePath.Replace(ImagePath.Split('.').Last(), "jpg"), ImageFormat.Jpeg); //Chỉnh sửa lại theo tỉ lệ 1:1
+                            ImagePath = ImagePath.Replace(ImagePath.Split('.').Last(), "jpg"); //Chỉnh sửa lại đường dẫn
+                            NenLanDau = false; 
+                            FI = new FileInfo(ImagePath); //Cập nhật lại dung lượng ảnh mới
+                        }
+                        else
+                        {
+                            ResizeImage(FI.Length, ImagePath, false).Save(ImagePath, ImageFormat.Jpeg);
+                            FI = new FileInfo(ImagePath); //Cập nhật lại dung lượng ảnh mới
+                        }                      
+                    }
+
+                    if (i == 0)
+                    {
+                        ListFile = ListFile + ImagePath.Replace("\\", "/");
                         i = 1;
                     }
                     else
                     {
-                        ListFile = ListFile + "\n" + Anh.Replace("\\", "/");
+                        ListFile = ListFile + "\n" + ImagePath.Replace("\\", "/");
                     }                                     
                 }
 
@@ -1534,18 +1599,17 @@ namespace Tool_Upload
             catch{ }
         }
 
-        private void txtLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        private void txtLink_Click(object sender, EventArgs e)
         {
             try
             {
                 System.Diagnostics.Process.Start(txtLink.Text);
             }
-            catch{}
-            
+            catch { }
         }
 
-        private void txtLinkNguon_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {            
+        private void txtLinkNguon_Click(object sender, EventArgs e)
+        {
             try
             {
                 System.Diagnostics.Process.Start(txtLinkNguon.Text);

@@ -14,6 +14,7 @@ namespace Tool_Upload
         [STAThread]
         static void Main()
         {          
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 

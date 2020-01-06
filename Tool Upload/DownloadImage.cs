@@ -1,4 +1,5 @@
-﻿using OpenQA.Selenium;
+﻿using HtmlAgilityPack;
+using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using System;
 using System.Collections.Generic;
@@ -24,8 +25,10 @@ namespace Tool_Upload
         private static ChromeDriver chromeDriver;
         //static Form1 form1 = new Form1();
 
-        private static int timeOut = 3;
+        private static int timeOut = 5;
         public static int TimeOut { get => timeOut; set => timeOut = value; }
+
+        #region Hàm thiết lập
 
         public DownloadImage()
         {
@@ -60,9 +63,7 @@ namespace Tool_Upload
             #endregion            
 
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-        }
-
-        #region Hàm thiết lập
+        }     
 
         public static void TaoDanhSachDinhDang()
         {
@@ -84,6 +85,7 @@ namespace Tool_Upload
 
         public static string DinhDang(string LinkAnh)
         {
+            //string Format = ".jpg";
             string Format = ".webp";
 
             foreach (string i in ListDinhDang)
@@ -148,7 +150,7 @@ namespace Tool_Upload
             return ChuongHienTai;
         }
 
-        public void TatChrome()
+        public static void TatChrome()
         {
             try
             {
@@ -157,6 +159,86 @@ namespace Tool_Upload
             }
             catch
             { }
+        }
+
+        public static void TaiAnh(string LinkAnh, int DemAnh, string DuongDan, string Ten, string Link)
+        {
+            WebClient client = new WebClient();
+
+            LinkAnh = HttpUtility.HtmlDecode(LinkAnh);
+            Link = HttpUtility.HtmlDecode(Link);
+
+            if (LinkAnh.ToLower().Contains("//proxy") == true)
+            {
+                if (LinkAnh.ToLower().Contains("http") == false)
+                {
+                    LinkAnh = "https:" + LinkAnh;
+                }
+            }
+
+            try
+            {
+                try
+                {
+                    Stream stream = client.OpenRead(LinkAnh);
+                    Bitmap bmp = new Bitmap(stream);
+                    stream.Flush();
+                    stream.Close();
+                    client.Dispose();
+
+                    if (DemAnh < 10)
+                    { bmp.Save(DuongDan + "\\" + Ten + "\\00" + DemAnh + ".jpg", ImageFormat.Jpeg); }
+                    else if(10 <= DemAnh  && DemAnh < 100)
+                    { bmp.Save(DuongDan + "\\" + Ten + "\\0" + DemAnh + ".jpg", ImageFormat.Jpeg); }
+                    else
+                    { bmp.Save(DuongDan + "\\" + Ten + "\\" + DemAnh + ".jpg", ImageFormat.Jpeg); }
+
+                    bmp.Dispose();
+                    GC.Collect();
+                }
+                catch
+                {
+                    if (DemAnh < 10)
+                    { client.DownloadFile(LinkAnh, DuongDan + "\\00" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
+                    else if (10 <= DemAnh && DemAnh < 100)
+                    { client.DownloadFile(LinkAnh, DuongDan + "\\0" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
+                    else
+                    { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
+                }
+                
+            }
+            catch
+            {
+                client.Headers.Set("Referer", Link);
+
+                try
+                {
+                    Stream stream = client.OpenRead(LinkAnh);
+                    Bitmap bmp = new Bitmap(stream);
+                    stream.Flush();
+                    stream.Close();
+                    client.Dispose();
+
+                    if (DemAnh < 10)
+                    { bmp.Save(DuongDan + "\\" + Ten + "\\00" + DemAnh + ".jpg", ImageFormat.Jpeg); }
+                    else if (10 <= DemAnh && DemAnh < 100)
+                    { bmp.Save(DuongDan + "\\" + Ten + "\\0" + DemAnh + ".jpg", ImageFormat.Jpeg); }
+                    else
+                    { bmp.Save(DuongDan + "\\" + Ten + "\\" + DemAnh + ".jpg", ImageFormat.Jpeg); }
+
+                    bmp.Dispose();
+                    GC.Collect();
+                }
+                catch
+                {
+                    if (DemAnh < 10)
+                    { client.DownloadFile(LinkAnh, DuongDan + "\\00" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
+                    else if (10 <= DemAnh && DemAnh < 100)
+                    { client.DownloadFile(LinkAnh, DuongDan + "\\0" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
+                    else
+                    { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
+                }
+            }
         }
 
         #endregion
@@ -292,39 +374,12 @@ namespace Tool_Upload
                     LinkAnh = anh.ToString().Replace(@"lazy"" src=""", "");
                     LinkAnh = LinkAnh.Replace(@"""", "");
 
-                    if (LinkAnh.ToLower().Contains("//proxy") == true)
-                    {
-                        if (LinkAnh.ToLower().Contains("http") == false)
-                        {
-                            LinkAnh = "https:" + LinkAnh;
-                        }
-                    }
-
                     try
                     {
                         if (Directory.Exists(DuongDan + "\\" + Ten) == false)
                         { Directory.CreateDirectory(DuongDan + "\\" + Ten); }
 
-                        WebClient client = new WebClient();
-
-                        try
-                        {
-                            if (DemAnh < 10)
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
-                            else
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
-                            
-                        }
-                        catch
-                        {
-                            client.Headers.Set("Referer", Link);
-
-                            if (DemAnh < 10)
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
-                            else
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
-                        }
-                        
+                        TaiAnh(LinkAnh, DemAnh, DuongDan, Ten, Link);
                     }
                     catch
                     {
@@ -348,6 +403,7 @@ namespace Tool_Upload
                 i--;
             }
 
+            ChuongHienTai = Ten;
             return ChuongHienTai;
         }
 
@@ -481,38 +537,12 @@ namespace Tool_Upload
                     LinkAnh = anh.ToString().Replace(@"lazy"" src=""", "");
                     LinkAnh = LinkAnh.Replace(@"""", "");
 
-                    if (LinkAnh.ToLower().Contains("//proxy") == true)
-                    {
-                        if (LinkAnh.ToLower().Contains("http") == false)
-                        {
-                            LinkAnh = "https:" + LinkAnh;
-                        }
-                    }
-
                     try
                     {
                         if (Directory.Exists(DuongDan + "\\" + Ten) == false)
                         { Directory.CreateDirectory(DuongDan + "\\" + Ten); }
 
-                        WebClient client = new WebClient();
-
-                        try
-                        {
-                            if (DemAnh < 10)
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
-                            else
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
-
-                        }
-                        catch
-                        {
-                            client.Headers.Set("Referer", Link);
-
-                            if (DemAnh < 10)
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
-                            else
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
-                        }
+                        TaiAnh(LinkAnh, DemAnh, DuongDan, Ten, Link);
 
                     }
                     catch
@@ -537,6 +567,7 @@ namespace Tool_Upload
                 i--;
             }
 
+            ChuongHienTai = Ten;
             return ChuongHienTai;
         }
 
@@ -689,38 +720,12 @@ namespace Tool_Upload
                     LinkAnh = anh.ToString().Replace(@"<img src=""", "");
                     LinkAnh = LinkAnh.Replace(@"""", "");
 
-                    if (LinkAnh.ToLower().Contains("//proxy") == true)
-                    {
-                        if(LinkAnh.ToLower().Contains("http") == false)
-                        {
-                            LinkAnh = "https:" + LinkAnh;
-                        }
-                    }
-
                     try
                     {
                         if (Directory.Exists(DuongDan + "\\" + Ten) == false)
                         { Directory.CreateDirectory(DuongDan + "\\" + Ten); }
 
-                        WebClient client = new WebClient();
-
-                        try
-                        {
-                            if (DemAnh < 10)
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
-                            else
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
-
-                        }
-                        catch
-                        {
-                            client.Headers.Set("Referer", Link);
-
-                            if (DemAnh < 10)
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
-                            else
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
-                        }
+                        TaiAnh(LinkAnh, DemAnh, DuongDan, Ten, Link);
 
                     }
                     catch
@@ -743,7 +748,9 @@ namespace Tool_Upload
                 ChuongHienTai = Ten; //Cập nhật lại "chương hiện tại"
 
                 i++;
-            }         
+            }
+
+            ChuongHienTai = Ten;
 
             return ChuongHienTai;
         }
@@ -952,9 +959,9 @@ namespace Tool_Upload
                                     using (var bitmap = new Bitmap(stream))
                                     {
                                         if (DemAnh < 10)
-                                        { bitmap.Save(DuongDan + "\\" + Ten + "\\0" + DemAnh + ".png", ImageFormat.Png); }
+                                        { bitmap.Save(DuongDan + "\\" + Ten + "\\0" + DemAnh + ".jpg", ImageFormat.Jpeg); }
                                         else
-                                        { bitmap.Save(DuongDan + "\\" + Ten + "\\" + DemAnh + ".png", ImageFormat.Png); }
+                                        { bitmap.Save(DuongDan + "\\" + Ten + "\\" + DemAnh + ".jpg", ImageFormat.Jpeg); }
                                     }
                                 }
                             }
@@ -990,38 +997,12 @@ namespace Tool_Upload
                     {
                         LinkAnh = Anh.GetAttribute("src");
 
-                        if (LinkAnh.ToLower().Contains("//proxy") == true)
-                        {
-                            if (LinkAnh.ToLower().Contains("http") == false)
-                            {
-                                LinkAnh = "https:" + LinkAnh;
-                            }
-                        }
-
                         try
                         {
                             if (Directory.Exists(DuongDan + "\\" + Ten) == false)
                             { Directory.CreateDirectory(DuongDan + "\\" + Ten); }
 
-                            WebClient client = new WebClient();
-
-                            try
-                            {
-                                if (DemAnh < 10)
-                                { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
-                                else
-                                { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
-
-                            }
-                            catch
-                            {
-                                client.Headers.Set("Referer", Link);
-
-                                if (DemAnh < 10)
-                                { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
-                                else
-                                { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
-                            }
+                            TaiAnh(LinkAnh, DemAnh, DuongDan, Ten, Link);
 
                         }
                         catch
@@ -1047,6 +1028,8 @@ namespace Tool_Upload
                 i--;
             }
 
+            ChuongHienTai = Ten;
+
             return ChuongHienTai;
         }
 
@@ -1059,13 +1042,12 @@ namespace Tool_Upload
 
             string htmlDanhSachChuong = httpClient.GetStringAsync("").Result;
 
-
             //Lấy danh sách chương có trong truyện
             string DanhSachChuongPartem1 = @"<li class=""active"">(.*?)</ul>";
             var DanhSachChuong1 = Regex.Matches(htmlDanhSachChuong, DanhSachChuongPartem1, RegexOptions.Singleline);
 
             string DanhSachChuongPartem2 = @"<a(.*?)</a>";
-            var DanhSachChuong2 = Regex.Matches(DanhSachChuong1[0].ToString(), DanhSachChuongPartem2, RegexOptions.Singleline);
+            var DanhSachChuong2 = Regex.Matches(DanhSachChuong1[1].ToString(), DanhSachChuongPartem2, RegexOptions.Singleline);
 
             string Ten = "";
             string Link, LinkAnh = "";
@@ -1176,38 +1158,12 @@ namespace Tool_Upload
                     LinkAnh = anh.ToString().Replace(@"class="""" src=""", "");
                     LinkAnh = LinkAnh.Replace(@"""", "");
 
-                    if (LinkAnh.ToLower().Contains("//proxy") == true)
-                    {
-                        if (LinkAnh.ToLower().Contains("http") == false)
-                        {
-                            LinkAnh = "https:" + LinkAnh;
-                        }
-                    }
-
                     try
                     {
                         if (Directory.Exists(DuongDan + "\\" + Ten) == false)
                         { Directory.CreateDirectory(DuongDan + "\\" + Ten); }
 
-                        WebClient client = new WebClient();
-
-                        try
-                        {
-                            if (DemAnh < 10)
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
-                            else
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
-
-                        }
-                        catch
-                        {
-                            client.Headers.Set("Referer", Link);
-
-                            if (DemAnh < 10)
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
-                            else
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
-                        }
+                        TaiAnh(LinkAnh, DemAnh, DuongDan, Ten, Link);
 
                     }
                     catch
@@ -1231,6 +1187,8 @@ namespace Tool_Upload
 
                 i--;
             }
+
+            ChuongHienTai = Ten;
 
             return ChuongHienTai;
         }
@@ -1367,38 +1325,12 @@ namespace Tool_Upload
                     LinkAnh = anh.ToString().Replace(@"src=""", "");
                     LinkAnh = LinkAnh.Replace(@"""", "");
 
-                    if (LinkAnh.ToLower().Contains("//proxy") == true)
-                    {
-                        if (LinkAnh.ToLower().Contains("http") == false)
-                        {
-                            LinkAnh = "https:" + LinkAnh;
-                        }
-                    }
-
                     try
                     {
                         if (Directory.Exists(DuongDan + "\\" + Ten) == false)
                         { Directory.CreateDirectory(DuongDan + "\\" + Ten); }
 
-                        WebClient client = new WebClient();
-
-                        try
-                        {
-                            if (DemAnh < 10)
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
-                            else
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
-
-                        }
-                        catch
-                        {
-                            client.Headers.Set("Referer", Link);
-
-                            if (DemAnh < 10)
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
-                            else
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
-                        }
+                        TaiAnh(LinkAnh, DemAnh, DuongDan, Ten, Link);
 
                     }
                     catch
@@ -1423,6 +1355,8 @@ namespace Tool_Upload
                 i--;
             }
 
+            ChuongHienTai = Ten;
+
             return ChuongHienTai;
         }
 
@@ -1435,19 +1369,18 @@ namespace Tool_Upload
 
             string htmlDanhSachChuong = httpClient.GetStringAsync("").Result;
 
-            //Lấy danh sách chương có trong truyện
-            string DanhSachChuongPartem1 = @"<tbody>(.*?)</tbody>";
-            var DanhSachChuong1 = Regex.Matches(htmlDanhSachChuong, DanhSachChuongPartem1, RegexOptions.Singleline);
+            var ListChuong = new HtmlAgilityPack.HtmlDocument();
+            ListChuong.LoadHtml(htmlDanhSachChuong);
 
-            string DanhSachChuongPartem2 = @"<tr>(.*?)</tr>";
-            var DanhSachChuong2 = Regex.Matches(DanhSachChuong1[0].ToString(), DanhSachChuongPartem2, RegexOptions.Singleline);
+            var Tbody = ListChuong.DocumentNode.SelectSingleNode(@"//table[@class=""table table-hover""]/tbody");
+            var DanhSachChuong = Tbody.SelectNodes(@"tr").ToList();           
 
             string Ten = "";
             string Link, LinkAnh = "";
             int DemAnh = 0;
 
             //int i = DanhSachChuong2.Count -  1 - Tre; //Giới hạn danh sách với độ trễ (giới hạn cuối tùy kiểu danh sách)
-            int i = DanhSachChuong2.Count - 1;
+            int i = DanhSachChuong.Count - 1;
 
             //Nếu danh sách rỗng tức là xảy ra lỗi không tương thích
             if (i < 0)
@@ -1462,9 +1395,8 @@ namespace Tool_Upload
             {
                 TonTai = "Không";
 
-                var TenChuong = Regex.Matches(DanhSachChuong2[i].ToString(), @"title=""(.*?)""", RegexOptions.Singleline);
-                Ten = TenChuong[0].ToString().Replace(@"title=""", "");
-                Ten = Ten.Replace(@"""", "");
+                var ChuongInfo = DanhSachChuong[i].SelectSingleNode("td[1]/a");
+                Ten = ChuongInfo.GetAttributeValue("title", "");
 
                 if (ChuongHienTai == "")
                 {
@@ -1500,15 +1432,9 @@ namespace Tool_Upload
             //Tải anh có trong chương
             while (i >= 0 + Tre) //Giới hạn danh sách với độ trễ
             {
-                //Lọc lấy link chương
-                var LinkChuong = Regex.Matches(DanhSachChuong2[i].ToString(), @"href=""(.*?)""", RegexOptions.Singleline);
-                Link = LinkChuong[0].ToString().Replace(@"href=""", "");
-                Link = Link.Replace(@"""", "");
-
-                //Lọc lấy tên chương
-                var TenChuong = Regex.Matches(DanhSachChuong2[i].ToString(), @"title=""(.*?)""", RegexOptions.Singleline);
-                Ten = TenChuong[0].ToString().Replace(@"title=""", "");
-                Ten = Ten.Replace(@"""", "");
+                var ChuongInfo = DanhSachChuong[i].SelectSingleNode("td[1]/a");
+                Link = ChuongInfo.GetAttributeValue("href", "");
+                Ten = ChuongInfo.GetAttributeValue("title", "");            
 
                 if (Ten.ToLower().Contains("raw") || Ten.ToLower().Contains("eng") || Ten.ToLower().Contains("english"))
                 {
@@ -1533,14 +1459,13 @@ namespace Tool_Upload
 
                 string htmlDanhSachAnh = httpClient2.GetStringAsync("").Result;
 
-                string DanhSachAnhPartem1 = @"<div class=""manga-container"">(.*?)<div align=""center"" class=""quang-cao-cuoi-trang"">";
-                var DanhSachAnh1 = Regex.Matches(htmlDanhSachAnh, DanhSachAnhPartem1, RegexOptions.Singleline);
+                var ListAnh = new HtmlAgilityPack.HtmlDocument();
+                ListAnh.LoadHtml(htmlDanhSachAnh);
 
-                string DanhSachAnhPartem2 = @"<img src=""(.*?)""";
-                var DanhSachAnh2 = Regex.Matches(DanhSachAnh1[0].ToString(), DanhSachAnhPartem2, RegexOptions.Singleline);
+                var DanhSachAnh = ListAnh.DocumentNode.SelectNodes(@"//*[@id=""main""]/div[4]/div[2]/img").ToList();
 
                 //Nếu danh sách rỗng tức là xảy ra lỗi không tương thích
-                if (DanhSachAnh2.Count == 0)
+                if (DanhSachAnh.Count == 0)
                 {
                     Ten = "[Lỗi tool không còn tương thích với web nguồn]\n" + IDTruyen + " " + Nguon;
                     ChuongHienTai = Ten;
@@ -1551,43 +1476,16 @@ namespace Tool_Upload
                 DemAnh = 0;
 
                 //Tải các ảnh có trong chương
-                foreach (var anh in DanhSachAnh2)
+                foreach (var anh in DanhSachAnh)
                 {
-                    LinkAnh = anh.ToString().Replace(@"<img src=""", "");
-                    LinkAnh = LinkAnh.Replace(@"""", "");
-
-                    if (LinkAnh.ToLower().Contains("//proxy") == true)
-                    {
-                        if (LinkAnh.ToLower().Contains("http") == false)
-                        {
-                            LinkAnh = "https:" + LinkAnh;
-                        }
-                    }
+                    LinkAnh = anh.GetAttributeValue("src", "");
 
                     try
                     {
                         if (Directory.Exists(DuongDan + "\\" + Ten) == false)
                         { Directory.CreateDirectory(DuongDan + "\\" + Ten); }
 
-                        WebClient client = new WebClient();
-
-                        try
-                        {
-                            if (DemAnh < 10)
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
-                            else
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
-
-                        }
-                        catch
-                        {
-                            client.Headers.Set("Referer", Link);
-
-                            if (DemAnh < 10)
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
-                            else
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
-                        }
+                        TaiAnh(LinkAnh, DemAnh, DuongDan, Ten, Link);
 
                     }
                     catch
@@ -1611,6 +1509,8 @@ namespace Tool_Upload
 
                 i--;
             }
+
+            ChuongHienTai = Ten;
 
             return ChuongHienTai;
         }      
@@ -1744,38 +1644,12 @@ namespace Tool_Upload
                     LinkAnh = anh.ToString().Replace(@"src=""", "");
                     LinkAnh = LinkAnh.Replace(@"""", "");
 
-                    if (LinkAnh.ToLower().Contains("//proxy") == true)
-                    {
-                        if (LinkAnh.ToLower().Contains("http") == false)
-                        {
-                            LinkAnh = "https:" + LinkAnh;
-                        }
-                    }
-
                     try
                     {
                         if (Directory.Exists(DuongDan + "\\" + Ten) == false)
                         { Directory.CreateDirectory(DuongDan + "\\" + Ten); }
 
-                        WebClient client = new WebClient();
-
-                        try
-                        {
-                            if (DemAnh < 10)
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
-                            else
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
-
-                        }
-                        catch
-                        {
-                            client.Headers.Set("Referer", Link);
-
-                            if (DemAnh < 10)
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
-                            else
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
-                        }
+                        TaiAnh(LinkAnh, DemAnh, DuongDan, Ten, Link);
 
                     }
                     catch
@@ -1799,6 +1673,8 @@ namespace Tool_Upload
 
                 i--;
             }
+
+            ChuongHienTai = Ten;
 
             return ChuongHienTai;
         }
@@ -1933,38 +1809,12 @@ namespace Tool_Upload
                     LinkAnh = anh.ToString().Replace(@"<img src=""", "").Replace(@"<img src='", "");
                     LinkAnh = LinkAnh.Replace(@"""", "").Replace("'", "").Trim();
 
-                    if (LinkAnh.ToLower().Contains("//proxy") == true)
-                    {
-                        if (LinkAnh.ToLower().Contains("http") == false)
-                        {
-                            LinkAnh = "https:" + LinkAnh;
-                        }
-                    }
-
                     try
                     {
                         if (Directory.Exists(DuongDan + "\\" + Ten) == false)
                         { Directory.CreateDirectory(DuongDan + "\\" + Ten); }
 
-                        WebClient client = new WebClient();
-
-                        try
-                        {
-                            if (DemAnh < 10)
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
-                            else
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
-
-                        }
-                        catch
-                        {
-                            client.Headers.Set("Referer", Link);
-
-                            if (DemAnh < 10)
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
-                            else
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
-                        }
+                        TaiAnh(LinkAnh, DemAnh, DuongDan, Ten, Link);
 
                     }
                     catch
@@ -1988,6 +1838,8 @@ namespace Tool_Upload
 
                 i--;
             }
+
+            ChuongHienTai = Ten;
 
             return ChuongHienTai;
         }
@@ -2145,38 +1997,12 @@ namespace Tool_Upload
                     LinkAnh = anh.ToString().Replace(@"com"" src=""", "").Replace(@"<img src=""", "");
                     LinkAnh = LinkAnh.Replace(@"""", "");
 
-                    if (LinkAnh.ToLower().Contains("//proxy") == true)
-                    {
-                        if (LinkAnh.ToLower().Contains("http") == false)
-                        {
-                            LinkAnh = "https:" + LinkAnh;
-                        }
-                    }
-
                     try
                     {
                         if (Directory.Exists(DuongDan + "\\" + Ten) == false)
                         { Directory.CreateDirectory(DuongDan + "\\" + Ten); }
 
-                        WebClient client = new WebClient();
-
-                        try
-                        {
-                            if (DemAnh < 10)
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
-                            else
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
-
-                        }
-                        catch
-                        {
-                            client.Headers.Set("Referer", Link);
-
-                            if (DemAnh < 10)
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
-                            else
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
-                        }
+                        TaiAnh(LinkAnh, DemAnh, DuongDan, Ten, Link);
 
                     }
                     catch
@@ -2200,6 +2026,8 @@ namespace Tool_Upload
 
                 i--;
             }
+
+            ChuongHienTai = Ten;
 
             return ChuongHienTai;
         }
@@ -2334,41 +2162,13 @@ namespace Tool_Upload
                     LinkAnh = Regex.Match(anh.ToString(), @"src=""(.*?)""", RegexOptions.Singleline).Value;
                     LinkAnh = LinkAnh.Replace(@"src=""", "");
                     LinkAnh = LinkAnh.Replace(@"""", "");
-                    
-                    LinkAnh = HttpUtility.HtmlDecode(LinkAnh);
-
-                    if (LinkAnh.ToLower().Contains("//proxy") == true)
-                    {
-                        if (LinkAnh.ToLower().Contains("http") == false)
-                        {
-                            LinkAnh = "https:" + LinkAnh;
-                        }
-                    }
 
                     try
                     {
                         if (Directory.Exists(DuongDan + "\\" + Ten) == false)
                         { Directory.CreateDirectory(DuongDan + "\\" + Ten); }
 
-                        WebClient client = new WebClient();
-
-                        try
-                        {
-                            if (DemAnh < 10)
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
-                            else
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
-
-                        }
-                        catch
-                        {
-                            client.Headers.Set("Referer", Link);
-
-                            if (DemAnh < 10)
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
-                            else
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
-                        }
+                        TaiAnh(LinkAnh, DemAnh, DuongDan, Ten, Link);
 
                     }
                     catch
@@ -2392,6 +2192,8 @@ namespace Tool_Upload
 
                 i--;
             }
+
+            ChuongHienTai = Ten;
 
             return ChuongHienTai;
         }
@@ -2527,38 +2329,12 @@ namespace Tool_Upload
                     LinkAnh = LinkAnh.Replace(@"src=""", "");
                     LinkAnh = LinkAnh.Replace(@"""", "");
 
-                    if (LinkAnh.ToLower().Contains("//proxy") == true)
-                    {
-                        if (LinkAnh.ToLower().Contains("http") == false)
-                        {
-                            LinkAnh = "https:" + LinkAnh;
-                        }
-                    }
-
                     try
                     {
                         if (Directory.Exists(DuongDan + "\\" + Ten) == false)
                         { Directory.CreateDirectory(DuongDan + "\\" + Ten); }
 
-                        WebClient client = new WebClient();
-
-                        try
-                        {
-                            if (DemAnh < 10)
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
-                            else
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
-
-                        }
-                        catch
-                        {
-                            client.Headers.Set("Referer", Link);
-
-                            if (DemAnh < 10)
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
-                            else
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
-                        }
+                        TaiAnh(LinkAnh, DemAnh, DuongDan, Ten, Link);
 
                     }
                     catch
@@ -2582,6 +2358,8 @@ namespace Tool_Upload
 
                 i--;
             }
+
+            ChuongHienTai = Ten;
 
             return ChuongHienTai;
         }
@@ -2715,38 +2493,12 @@ namespace Tool_Upload
                     LinkAnh = anh.ToString().Replace(@"<img src=""", "");
                     LinkAnh = LinkAnh.Replace(@"""", "");
 
-                    if (LinkAnh.ToLower().Contains("//proxy") == true)
-                    {
-                        if (LinkAnh.ToLower().Contains("http") == false)
-                        {
-                            LinkAnh = "https:" + LinkAnh;
-                        }
-                    }
-
                     try
                     {
                         if (Directory.Exists(DuongDan + "\\" + Ten) == false)
                         { Directory.CreateDirectory(DuongDan + "\\" + Ten); }
 
-                        WebClient client = new WebClient();
-
-                        try
-                        {
-                            if (DemAnh < 10)
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
-                            else
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
-
-                        }
-                        catch
-                        {
-                            client.Headers.Set("Referer", Link);
-
-                            if (DemAnh < 10)
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
-                            else
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
-                        }
+                        TaiAnh(LinkAnh, DemAnh, DuongDan, Ten, Link);
 
                     }
                     catch
@@ -2770,6 +2522,8 @@ namespace Tool_Upload
 
                 i--;
             }
+
+            ChuongHienTai = Ten;
 
             return ChuongHienTai;
         }
@@ -2899,38 +2653,12 @@ namespace Tool_Upload
                     LinkAnh = anh.ToString().Replace(@"<img src=""", "");
                     LinkAnh = LinkAnh.Replace(@"""", "");
 
-                    if (LinkAnh.ToLower().Contains("//proxy") == true)
-                    {
-                        if (LinkAnh.ToLower().Contains("http") == false)
-                        {
-                            LinkAnh = "https:" + LinkAnh;
-                        }
-                    }
-
                     try
                     {
                         if (Directory.Exists(DuongDan + "\\" + Ten) == false)
                         { Directory.CreateDirectory(DuongDan + "\\" + Ten); }
 
-                        WebClient client = new WebClient();
-
-                        try
-                        {
-                            if (DemAnh < 10)
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
-                            else
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
-
-                        }
-                        catch
-                        {
-                            client.Headers.Set("Referer", Link);
-
-                            if (DemAnh < 10)
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
-                            else
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
-                        }
+                        TaiAnh(LinkAnh, DemAnh, DuongDan, Ten, Link);
 
                     }
                     catch
@@ -2954,6 +2682,8 @@ namespace Tool_Upload
 
                 i--;
             }
+
+            ChuongHienTai = Ten;
 
             return ChuongHienTai;
         }
@@ -3094,38 +2824,12 @@ namespace Tool_Upload
                     LinkAnh = anh.ToString().Replace(@"><img class=""chapter-img"" src=""", "");
                     LinkAnh = LinkAnh.Replace(@"""", "");
 
-                    if (LinkAnh.ToLower().Contains("//proxy") == true)
-                    {
-                        if (LinkAnh.ToLower().Contains("http") == false)
-                        {
-                            LinkAnh = "https:" + LinkAnh;
-                        }
-                    }
-
                     try
                     {
                         if (Directory.Exists(DuongDan + "\\" + Ten) == false)
                         { Directory.CreateDirectory(DuongDan + "\\" + Ten); }
 
-                        WebClient client = new WebClient();
-
-                        try
-                        {
-                            if (DemAnh < 10)
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
-                            else
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
-
-                        }
-                        catch
-                        {
-                            client.Headers.Set("Referer", Link);
-
-                            if (DemAnh < 10)
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
-                            else
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
-                        }
+                        TaiAnh(LinkAnh, DemAnh, DuongDan, Ten, Link);
 
                     }
                     catch
@@ -3149,6 +2853,8 @@ namespace Tool_Upload
 
                 i--;
             }
+
+            ChuongHienTai = Ten;
 
             return ChuongHienTai;
         }
@@ -3277,38 +2983,12 @@ namespace Tool_Upload
                     LinkAnh = anh.ToString().Replace(@"><img class=""chapter-img"" src=""", "");
                     LinkAnh = LinkAnh.Replace(@"""", "");
 
-                    if (LinkAnh.ToLower().Contains("//proxy") == true)
-                    {
-                        if (LinkAnh.ToLower().Contains("http") == false)
-                        {
-                            LinkAnh = "https:" + LinkAnh;
-                        }
-                    }
-
                     try
                     {
                         if (Directory.Exists(DuongDan + "\\" + Ten) == false)
                         { Directory.CreateDirectory(DuongDan + "\\" + Ten); }
 
-                        WebClient client = new WebClient();
-
-                        try
-                        {
-                            if (DemAnh < 10)
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
-                            else
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
-
-                        }
-                        catch
-                        {
-                            client.Headers.Set("Referer", Link);
-
-                            if (DemAnh < 10)
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
-                            else
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
-                        }
+                        TaiAnh(LinkAnh, DemAnh, DuongDan, Ten, Link);
 
                     }
                     catch
@@ -3332,6 +3012,8 @@ namespace Tool_Upload
 
                 i--;
             }
+
+            ChuongHienTai = Ten;
 
             return ChuongHienTai;
         }
@@ -3375,12 +3057,6 @@ namespace Tool_Upload
                 var TenChuong = Regex.Matches(DanhSachChuong2[i].ToString(), @">(.*?)</a>", RegexOptions.Singleline);
                 Ten = TenChuong[0].ToString().Replace(@">", "");
                 Ten = Ten.Replace(@"</a", "");
-
-                if (ChuongHienTai == "")
-                {
-                    ChuongHienTai = Ten;
-                    i++;
-                }
 
                 if (ChuongHienTai == "")
                 {
@@ -3520,9 +3196,9 @@ namespace Tool_Upload
                                 using (var bitmap = new Bitmap(stream))
                                 {
                                     if (DemAnh < 10)
-                                    { bitmap.Save(DuongDan + "\\" + Ten + "\\0" + DemAnh + ".png", ImageFormat.Png); }
+                                    { bitmap.Save(DuongDan + "\\" + Ten + "\\0" + DemAnh + ".jpg", ImageFormat.Jpeg); }
                                     else
-                                    { bitmap.Save(DuongDan + "\\" + Ten + "\\" + DemAnh + ".png", ImageFormat.Png); }
+                                    { bitmap.Save(DuongDan + "\\" + Ten + "\\" + DemAnh + ".jpg", ImageFormat.Jpeg); }
                                 }
                             }
                         }
@@ -3542,38 +3218,13 @@ namespace Tool_Upload
                     }
                     else
                     {
-                        if (LinkAnh.ToLower().Contains("//proxy") == true)
-                        {
-                            if (LinkAnh.ToLower().Contains("http") == false)
-                            {
-                                LinkAnh = "https:" + LinkAnh;
-                            }
-                        }
 
                         try
                         {
                             if (Directory.Exists(DuongDan + "\\" + Ten) == false)
                             { Directory.CreateDirectory(DuongDan + "\\" + Ten); }
 
-                            WebClient client = new WebClient();
-
-                            try
-                            {
-                                if (DemAnh < 10)
-                                { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
-                                else
-                                { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
-
-                            }
-                            catch
-                            {
-                                client.Headers.Set("Referer", Link);
-
-                                if (DemAnh < 10)
-                                { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
-                                else
-                                { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
-                            }
+                            TaiAnh(LinkAnh, DemAnh, DuongDan, Ten, Link);
 
                         }
                         catch
@@ -3598,6 +3249,8 @@ namespace Tool_Upload
 
                 i--;
             }
+
+            ChuongHienTai = Ten;
 
             return ChuongHienTai;
         }
@@ -3730,38 +3383,12 @@ namespace Tool_Upload
                 {
                     LinkAnh = anh.GetAttribute("src");
 
-                    if (LinkAnh.ToLower().Contains("//proxy") == true)
-                    {
-                        if (LinkAnh.ToLower().Contains("http") == false)
-                        {
-                            LinkAnh = "https:" + LinkAnh;
-                        }
-                    }
-
                     try
                     {
                         if (Directory.Exists(DuongDan + "\\" + Ten) == false)
                         { Directory.CreateDirectory(DuongDan + "\\" + Ten); }
 
-                        WebClient client = new WebClient();
-
-                        try
-                        {
-                            if (DemAnh < 10)
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
-                            else
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
-
-                        }
-                        catch
-                        {
-                            client.Headers.Set("Referer", Link);
-
-                            if (DemAnh < 10)
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
-                            else
-                            { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
-                        }
+                        TaiAnh(LinkAnh, DemAnh, DuongDan, Ten, Link);
 
                     }
                     catch
@@ -3785,6 +3412,8 @@ namespace Tool_Upload
 
                 i--;
             }
+
+            ChuongHienTai = Ten;
 
             return ChuongHienTai;
         }
