@@ -32,13 +32,13 @@ namespace Tool_Upload
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle15 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle16 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle17 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle18 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle19 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle20 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle21 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.txtSoLuong = new System.Windows.Forms.ToolStripTextBox();
             this.btnTruyVan = new System.Windows.Forms.ToolStripMenuItem();
@@ -1085,10 +1085,10 @@ namespace Tool_Upload
             // IDTruyen
             // 
             this.IDTruyen.DataPropertyName = "IDTruyen";
-            dataGridViewCellStyle15.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle15.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
-            dataGridViewCellStyle15.ForeColor = System.Drawing.Color.DarkRed;
-            this.IDTruyen.DefaultCellStyle = dataGridViewCellStyle15;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.Color.DarkRed;
+            this.IDTruyen.DefaultCellStyle = dataGridViewCellStyle1;
             this.IDTruyen.FillWeight = 35F;
             this.IDTruyen.HeaderText = "ID truyện";
             this.IDTruyen.Name = "IDTruyen";
@@ -1097,10 +1097,10 @@ namespace Tool_Upload
             // ChuongHienTai
             // 
             this.ChuongHienTai.DataPropertyName = "ChuongHienTai";
-            dataGridViewCellStyle16.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle16.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
-            dataGridViewCellStyle16.ForeColor = System.Drawing.Color.DarkRed;
-            this.ChuongHienTai.DefaultCellStyle = dataGridViewCellStyle16;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.DarkRed;
+            this.ChuongHienTai.DefaultCellStyle = dataGridViewCellStyle2;
             this.ChuongHienTai.FillWeight = 55F;
             this.ChuongHienTai.HeaderText = "Chương hiện tại";
             this.ChuongHienTai.Name = "ChuongHienTai";
@@ -1109,10 +1109,10 @@ namespace Tool_Upload
             // Nguon
             // 
             this.Nguon.DataPropertyName = "Nguon";
-            dataGridViewCellStyle17.BackColor = System.Drawing.Color.AntiqueWhite;
-            dataGridViewCellStyle17.Font = new System.Drawing.Font("Microsoft YaHei UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle17.ForeColor = System.Drawing.Color.Blue;
-            this.Nguon.DefaultCellStyle = dataGridViewCellStyle17;
+            dataGridViewCellStyle3.BackColor = System.Drawing.Color.AntiqueWhite;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft YaHei UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle3.ForeColor = System.Drawing.Color.Blue;
+            this.Nguon.DefaultCellStyle = dataGridViewCellStyle3;
             this.Nguon.FillWeight = 130F;
             this.Nguon.HeaderText = "Nguồn";
             this.Nguon.Name = "Nguon";
@@ -1121,9 +1121,9 @@ namespace Tool_Upload
             // Tre
             // 
             this.Tre.DataPropertyName = "Tre";
-            dataGridViewCellStyle18.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle18.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))));
-            this.Tre.DefaultCellStyle = dataGridViewCellStyle18;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))));
+            this.Tre.DefaultCellStyle = dataGridViewCellStyle4;
             this.Tre.FillWeight = 20F;
             this.Tre.HeaderText = "Trễ";
             this.Tre.Name = "Tre";
@@ -1132,9 +1132,9 @@ namespace Tool_Upload
             // TrangThai
             // 
             this.TrangThai.DataPropertyName = "TrangThai";
-            dataGridViewCellStyle19.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle19.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))));
-            this.TrangThai.DefaultCellStyle = dataGridViewCellStyle19;
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle5.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))));
+            this.TrangThai.DefaultCellStyle = dataGridViewCellStyle5;
             this.TrangThai.FillWeight = 50F;
             this.TrangThai.HeaderText = "Trạng thái";
             this.TrangThai.Name = "TrangThai";
@@ -1143,9 +1143,9 @@ namespace Tool_Upload
             // LenDauTrang
             // 
             this.LenDauTrang.DataPropertyName = "LenDauTrang";
-            dataGridViewCellStyle20.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle20.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))));
-            this.LenDauTrang.DefaultCellStyle = dataGridViewCellStyle20;
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle6.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))));
+            this.LenDauTrang.DefaultCellStyle = dataGridViewCellStyle6;
             this.LenDauTrang.FillWeight = 40F;
             this.LenDauTrang.HeaderText = "Lên đầu trang";
             this.LenDauTrang.Name = "LenDauTrang";
@@ -1154,10 +1154,10 @@ namespace Tool_Upload
             // NgayCapNhat
             // 
             this.NgayCapNhat.DataPropertyName = "NgayCapNhat";
-            dataGridViewCellStyle21.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle21.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
-            dataGridViewCellStyle21.ForeColor = System.Drawing.Color.Red;
-            this.NgayCapNhat.DefaultCellStyle = dataGridViewCellStyle21;
+            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle7.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
+            dataGridViewCellStyle7.ForeColor = System.Drawing.Color.Red;
+            this.NgayCapNhat.DefaultCellStyle = dataGridViewCellStyle7;
             this.NgayCapNhat.FillWeight = 70F;
             this.NgayCapNhat.HeaderText = "Ngày cập nhật";
             this.NgayCapNhat.Name = "NgayCapNhat";

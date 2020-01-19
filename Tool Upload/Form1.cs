@@ -105,7 +105,7 @@ namespace Tool_Upload
             
             WebClient client = new WebClient();
             //client.Headers.Set("Referer", "");
-            client.DownloadFile("https://daityteam.com/wp-content/uploads/WP-manga/data/manga_5d0924ece7978/a2a632008ac1036e71420947946bf935/1-(1).jpg", "C:\\Users\\NBT\\Desktop\\Test.webp");
+            client.DownloadFile("https://1.bp.blogspot.com/-bJ7Fm7caJZs/XbEjotLVklI/AAAAAAACcx0/OUNKj4Xq0As1hRQR4yPPWvyAQHcso-ocQCLcBGAsYHQ/s1600/01.jpg?imgmax=0", "C:\\Users\\NBT\\Desktop\\Test.webp");
 
 
 
@@ -670,69 +670,76 @@ namespace Tool_Upload
 
             try
             {
-                if(Nguon.Contains("truyenqq.com") == true)
-                { KetQua = DownloadImage.TruyenQQ(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text, cbTaiTiepKhiLoi.Checked); }
+                if(ChuongHienTai != "[lỗi truyện đã bị xóa hoặc không tồn tại]")
+                {
+                    if (Nguon.Contains("truyenqq.com") == true)
+                    { KetQua = DownloadImage.TruyenQQ(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text, cbTaiTiepKhiLoi.Checked); }
 
-                else if(Nguon.Contains("hocvientruyentranh.net") == true)
-                { KetQua = DownloadImage.HocVienTruyenTranh(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text, cbTaiTiepKhiLoi.Checked); }
+                    else if (Nguon.Contains("hocvientruyentranh.net") == true)
+                    { KetQua = DownloadImage.HocVienTruyenTranh(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text, cbTaiTiepKhiLoi.Checked); }
 
-                else if (Nguon.Contains("truyentranh.net") == true)
-                { KetQua = DownloadImage.TruyenTranhNet(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text, cbTaiTiepKhiLoi.Checked); }
+                    else if (Nguon.Contains("truyentranh.net") == true)
+                    { KetQua = DownloadImage.TruyenTranhNet(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text, cbTaiTiepKhiLoi.Checked); }
 
-                else if (Nguon.Contains("truyentranhlh.net") == true)
-                { KetQua = DownloadImage.TruyenTranhLH(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text, cbTaiTiepKhiLoi.Checked); }
+                    else if (Nguon.Contains("truyentranhlh.net") == true)
+                    { KetQua = DownloadImage.TruyenTranhLH(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text, cbTaiTiepKhiLoi.Checked); }
 
-                else if (Nguon.Contains("beeng.net") == true)
-                { KetQua = DownloadImage.Beeng(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text, cbTaiTiepKhiLoi.Checked); }
+                    else if (Nguon.Contains("beeng.net") == true)
+                    { KetQua = DownloadImage.Beeng(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text, cbTaiTiepKhiLoi.Checked); }
 
-                else if (Nguon.Contains("ntruyen.info") == true || Nguon.Contains("ntruyentranh.info") == true)
-                { KetQua = DownloadImage.Ntruyen(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text, cbTaiTiepKhiLoi.Checked); }
+                    else if (Nguon.Contains("ntruyen.info") == true || Nguon.Contains("ntruyentranh.info") == true)
+                    { KetQua = DownloadImage.Ntruyen(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text, cbTaiTiepKhiLoi.Checked); }
 
-                else if (Nguon.Contains("truyentranhtuan.com") == true)
-                { KetQua = DownloadImage.TruyenTranhTuan(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text, cbTaiTiepKhiLoi.Checked); }
+                    else if (Nguon.Contains("truyentranhtuan.com") == true)
+                    { KetQua = DownloadImage.TruyenTranhTuan(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text, cbTaiTiepKhiLoi.Checked); }
 
-                else if (Nguon.Contains("hamtruyen.com") == true)
-                { KetQua = DownloadImage.HamTruyen(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text, cbTaiTiepKhiLoi.Checked); }
+                    else if (Nguon.Contains("hamtruyen.com") == true)
+                    { KetQua = DownloadImage.HamTruyen(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text, cbTaiTiepKhiLoi.Checked); }
 
-                else if (Nguon.Contains("truyensieuhay.com") == true)
-                { KetQua = DownloadImage.TruyenSieuHay(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text, cbTaiTiepKhiLoi.Checked); }
+                    else if (Nguon.Contains("truyensieuhay.com") == true)
+                    { KetQua = DownloadImage.TruyenSieuHay(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text, cbTaiTiepKhiLoi.Checked); }
 
-                else if (Nguon.Contains("nettruyen.com") == true || Nguon.Contains("nhattruyen.com") == true)
-                { KetQua = DownloadImage.NetTruyen(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text, cbTaiTiepKhiLoi.Checked); }
+                    else if (Nguon.Contains("nettruyen.com") == true || Nguon.Contains("nhattruyen.com") == true)
+                    { KetQua = DownloadImage.NetTruyen(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text, cbTaiTiepKhiLoi.Checked); }
 
-                else if (Nguon.Contains("truyenchon.com") == true)
-                { KetQua = DownloadImage.TruyenChon (IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text, cbTaiTiepKhiLoi.Checked); }
+                    else if (Nguon.Contains("truyenchon.com") == true)
+                    { KetQua = DownloadImage.TruyenChon(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text, cbTaiTiepKhiLoi.Checked); }
 
-                else if (Nguon.Contains("truyen48.com") == true)
-                { KetQua = DownloadImage.Truyen48 (IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text, cbTaiTiepKhiLoi.Checked); }
+                    else if (Nguon.Contains("truyen48.com") == true)
+                    { KetQua = DownloadImage.Truyen48(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text, cbTaiTiepKhiLoi.Checked); }
 
-                else if (Nguon.Contains("ocumeo.com") == true)
-                { KetQua = DownloadImage.OCuMeo(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text, cbTaiTiepKhiLoi.Checked); }
+                    else if (Nguon.Contains("ocumeo.com") == true)
+                    { KetQua = DownloadImage.OCuMeo(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text, cbTaiTiepKhiLoi.Checked); }
 
-                else if (Nguon.Contains("truyen1.net") == true)
-                { KetQua = DownloadImage.Truyen1(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text, cbTaiTiepKhiLoi.Checked); }
+                    else if (Nguon.Contains("truyen1.net") == true)
+                    { KetQua = DownloadImage.Truyen1(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text, cbTaiTiepKhiLoi.Checked); }
 
-                else if (Nguon.Contains("a3manga.com") == true)
-                { KetQua = DownloadImage.A3Manga(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text, cbTaiTiepKhiLoi.Checked); }
+                    else if (Nguon.Contains("a3manga.com") == true)
+                    { KetQua = DownloadImage.A3Manga(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text, cbTaiTiepKhiLoi.Checked); }
 
-                else if (Nguon.Contains("ngonphongcomics.com") == true)
-                { KetQua = DownloadImage.NgonPhongComic(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text, cbTaiTiepKhiLoi.Checked); }
+                    else if (Nguon.Contains("ngonphongcomics.com") == true)
+                    { KetQua = DownloadImage.NgonPhongComic(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text, cbTaiTiepKhiLoi.Checked); }
 
-                else if (Nguon.Contains("otakusan.net") == true)
-                { KetQua = DownloadImage.Otakusan(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text, cbTaiTiepKhiLoi.Checked); }
+                    else if (Nguon.Contains("otakusan.net") == true)
+                    { KetQua = DownloadImage.Otakusan(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text, cbTaiTiepKhiLoi.Checked); }
 
-                else if (Nguon.Contains("ttmanga.com") == true)
-                { KetQua = DownloadImage.TTManga(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text, cbTaiTiepKhiLoi.Checked); }
+                    else if (Nguon.Contains("ttmanga.com") == true)
+                    { KetQua = DownloadImage.TTManga(IDTruyen, Nguon, ChuongHienTai, int.Parse(Tre), txtDuongDan.Text, cbTaiTiepKhiLoi.Checked); }
 
+                    else
+                    { KetQua = "[lỗi không hỗ trợ web nguồn này]:\n" + IDTruyen + " " + Nguon; }
+                }
                 else
-                { KetQua = "[Lỗi không hỗ trợ web nguồn này]:\n" + IDTruyen + " " + Nguon; }
+                {
+                    KetQua = ChuongHienTai + " " + IDTruyen;
+                }
             }
             catch
             {
                 if (Directory.Exists(txtDuongDan.Text) == true)
                 { Directory.Delete(txtDuongDan.Text, true); }
 
-                KetQua = "[Lỗi web nguồn hoặc thư mục liên kết đang bị sử dụng]:\n" + IDTruyen + " " + Nguon;
+                KetQua = "[lỗi web nguồn hoặc thư mục liên kết đang bị sử dụng]:\n" + IDTruyen + " " + Nguon;
             }
 
             //Upload ảnh
@@ -802,8 +809,8 @@ namespace Tool_Upload
 
             if (cbHienChrome.Checked == true)
             {
-                IntPtr hWnd = currentProcess.MainWindowHandle;
-                SetForegroundWindow(hWnd);
+                //IntPtr hWnd = currentProcess.MainWindowHandle;
+                //SetForegroundWindow(hWnd);
             }
 
             System.GC.Collect();
