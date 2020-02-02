@@ -587,9 +587,9 @@ namespace Tool_Upload
             this.pnDoiTenChuong.Controls.Add(this.Đổi);
             this.pnDoiTenChuong.Controls.Add(this.cbDoiTenThanh);
             this.pnDoiTenChuong.Controls.Add(this.cbTenMuonDoi);
-            this.pnDoiTenChuong.Location = new System.Drawing.Point(3, 33);
+            this.pnDoiTenChuong.Location = new System.Drawing.Point(3, 46);
             this.pnDoiTenChuong.Name = "pnDoiTenChuong";
-            this.pnDoiTenChuong.Size = new System.Drawing.Size(410, 179);
+            this.pnDoiTenChuong.Size = new System.Drawing.Size(410, 159);
             this.pnDoiTenChuong.TabIndex = 6;
             // 
             // btnHoanDoi
@@ -597,7 +597,7 @@ namespace Tool_Upload
             this.btnHoanDoi.AutoSize = true;
             this.btnHoanDoi.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnHoanDoi.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnHoanDoi.Location = new System.Drawing.Point(158, 89);
+            this.btnHoanDoi.Location = new System.Drawing.Point(158, 73);
             this.btnHoanDoi.Name = "btnHoanDoi";
             this.btnHoanDoi.Size = new System.Drawing.Size(19, 13);
             this.btnHoanDoi.TabIndex = 20;
@@ -609,7 +609,7 @@ namespace Tool_Upload
             this.groupBox1.Controls.Add(this.rbtDoiTen);
             this.groupBox1.Controls.Add(this.rbtDanhThuTu);
             this.groupBox1.Controls.Add(this.rbtCaHai);
-            this.groupBox1.Location = new System.Drawing.Point(259, 24);
+            this.groupBox1.Location = new System.Drawing.Point(259, 8);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(143, 139);
             this.groupBox1.TabIndex = 19;
@@ -651,7 +651,7 @@ namespace Tool_Upload
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(12, 33);
+            this.label10.Location = new System.Drawing.Point(12, 17);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(82, 13);
             this.label10.TabIndex = 18;
@@ -659,14 +659,14 @@ namespace Tool_Upload
             // 
             // txtIDTruyenCanDoiTen
             // 
-            this.txtIDTruyenCanDoiTen.Location = new System.Drawing.Point(97, 30);
+            this.txtIDTruyenCanDoiTen.Location = new System.Drawing.Point(97, 14);
             this.txtIDTruyenCanDoiTen.Name = "txtIDTruyenCanDoiTen";
             this.txtIDTruyenCanDoiTen.Size = new System.Drawing.Size(142, 20);
             this.txtIDTruyenCanDoiTen.TabIndex = 17;
             // 
             // nbKhoangCachChuong
             // 
-            this.nbKhoangCachChuong.Location = new System.Drawing.Point(97, 143);
+            this.nbKhoangCachChuong.Location = new System.Drawing.Point(97, 127);
             this.nbKhoangCachChuong.Name = "nbKhoangCachChuong";
             this.nbKhoangCachChuong.Size = new System.Drawing.Size(142, 20);
             this.nbKhoangCachChuong.TabIndex = 16;
@@ -679,7 +679,7 @@ namespace Tool_Upload
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(12, 145);
+            this.label12.Location = new System.Drawing.Point(12, 129);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(74, 13);
             this.label12.TabIndex = 13;
@@ -688,7 +688,7 @@ namespace Tool_Upload
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(12, 108);
+            this.label11.Location = new System.Drawing.Point(12, 92);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(41, 13);
             this.label11.TabIndex = 14;
@@ -697,7 +697,7 @@ namespace Tool_Upload
             // Đổi
             // 
             this.Đổi.AutoSize = true;
-            this.Đổi.Location = new System.Drawing.Point(12, 69);
+            this.Đổi.Location = new System.Drawing.Point(12, 53);
             this.Đổi.Name = "Đổi";
             this.Đổi.Size = new System.Drawing.Size(38, 13);
             this.Đổi.TabIndex = 15;
@@ -710,7 +710,7 @@ namespace Tool_Upload
             "Chap",
             "Chapter",
             "Chương"});
-            this.cbDoiTenThanh.Location = new System.Drawing.Point(97, 105);
+            this.cbDoiTenThanh.Location = new System.Drawing.Point(97, 89);
             this.cbDoiTenThanh.Name = "cbDoiTenThanh";
             this.cbDoiTenThanh.Size = new System.Drawing.Size(142, 21);
             this.cbDoiTenThanh.TabIndex = 12;
@@ -723,7 +723,7 @@ namespace Tool_Upload
             "Chap",
             "Chapter",
             "Chương"});
-            this.cbTenMuonDoi.Location = new System.Drawing.Point(97, 66);
+            this.cbTenMuonDoi.Location = new System.Drawing.Point(97, 50);
             this.cbTenMuonDoi.Name = "cbTenMuonDoi";
             this.cbTenMuonDoi.Size = new System.Drawing.Size(142, 21);
             this.cbTenMuonDoi.TabIndex = 11;
@@ -1242,7 +1242,7 @@ namespace Tool_Upload
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Tool leech";
+            this.Text = "Tool upload";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();

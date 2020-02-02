@@ -214,9 +214,9 @@ namespace Tool_Upload
                 catch
                 {
                     if (DemAnh < 10)
-                    { client.DownloadFile(LinkAnh, DuongDan + "\\00" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
+                    { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\00" + DemAnh + DinhDang(LinkAnh)); }
                     else if (10 <= DemAnh && DemAnh < 100)
-                    { client.DownloadFile(LinkAnh, DuongDan + "\\0" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
+                    { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
                     else
                     { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
                 }
@@ -247,13 +247,15 @@ namespace Tool_Upload
                 catch
                 {
                     if (DemAnh < 10)
-                    { client.DownloadFile(LinkAnh, DuongDan + "\\00" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
+                    { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\00" + DemAnh + DinhDang(LinkAnh)); }
                     else if (10 <= DemAnh && DemAnh < 100)
-                    { client.DownloadFile(LinkAnh, DuongDan + "\\0" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
+                    { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\0" + DemAnh + DinhDang(LinkAnh)); }
                     else
                     { client.DownloadFile(LinkAnh, DuongDan + "\\" + Ten + "\\" + DemAnh + DinhDang(LinkAnh)); }
                 }
             }
+
+            client.Dispose();
         }
 
         #endregion
@@ -1036,18 +1038,18 @@ namespace Tool_Upload
             string htmlDanhSachChuong = httpClient.GetStringAsync("").Result;
 
             //Lấy danh sách chương có trong truyện
-            string DanhSachChuongPartem1 = @"<li class=""active"">(.*?)</ul>";
-            var DanhSachChuong1 = Regex.Matches(htmlDanhSachChuong, DanhSachChuongPartem1, RegexOptions.Singleline);
+            var NoiDungTruyen = new HtmlAgilityPack.HtmlDocument();
+            NoiDungTruyen.LoadHtml(htmlDanhSachChuong);
 
-            string DanhSachChuongPartem2 = @"<a(.*?)</a>";
-            var DanhSachChuong2 = Regex.Matches(DanhSachChuong1[1].ToString(), DanhSachChuongPartem2, RegexOptions.Singleline);
+            var ChuongTable = NoiDungTruyen.DocumentNode.SelectSingleNode(@"//div[@class=""manga-chapter margin-top-10""]/ul/li/ul/li/ul");
+            var DanhSachChuong = ChuongTable.SelectNodes(@"li/a").ToList();            
 
             string Ten = "";
             string Link, LinkAnh = "";
             int DemAnh = 0;
 
             //int i = DanhSachChuong2.Count -  1 - Tre; //Giới hạn danh sách với độ trễ (giới hạn cuối tùy kiểu danh sách)
-            int i = DanhSachChuong2.Count - 1;
+            int i = DanhSachChuong.Count - 1;
 
             //Nếu danh sách rỗng tức là xảy ra lỗi không tương thích
             if (i < 0)
@@ -1062,10 +1064,7 @@ namespace Tool_Upload
             while (i >= 0 + Tre) //Giới hạn danh sách với độ trễ (giới hạn đầu tùy kiểu danh sách)
             {
                 TonTai = "Không";
-
-                var TenChuong = Regex.Matches(DanhSachChuong2[i].ToString(), @">(.*?)<", RegexOptions.Singleline);
-                Ten = TenChuong[0].ToString().Replace(@">", "");
-                Ten = Ten.Replace(@"<", "");
+                Ten = DanhSachChuong[i].InnerHtml;
 
                 if (ChuongHienTai == "")
                 {
@@ -1102,15 +1101,10 @@ namespace Tool_Upload
             while (i >= 0 + Tre) //Giới hạn danh sách với độ trễ
             {
                 //Lọc lấy link chương
-                var LinkChuong = Regex.Matches(DanhSachChuong2[i].ToString(), @"href=""(.*?)""", RegexOptions.Singleline);
-                Link = LinkChuong[0].ToString().Replace(@"href=""", "");
-                Link = Link.Replace(@"""", "");
-                Link = "https://beeng.net/" + Link;
+                Link = "https://beeng.net/" + DanhSachChuong[i].GetAttributeValue("href", "");
 
                 //Lọc lấy tên chương
-                var TenChuong = Regex.Matches(DanhSachChuong2[i].ToString(), @">(.*?)<", RegexOptions.Singleline);
-                Ten = TenChuong[0].ToString().Replace(@">", "");
-                Ten = Ten.Replace(@"<", "");
+                Ten = DanhSachChuong[i].InnerHtml;
 
                 //Loại bỏ kí tự hạn chế trong tên
                 foreach (string KiTu in ListHanChe)
@@ -1129,14 +1123,14 @@ namespace Tool_Upload
 
                 string htmlDanhSachAnh = httpClient2.GetStringAsync("").Result;
 
-                string DanhSachAnhPartem1 = @"<div id=""image-load"">(.*?)</div>";
-                var DanhSachAnh1 = Regex.Matches(htmlDanhSachAnh, DanhSachAnhPartem1, RegexOptions.Singleline);
+                var NoiDungChuong = new HtmlAgilityPack.HtmlDocument();
+                NoiDungChuong.LoadHtml(htmlDanhSachAnh);
 
-                string DanhSachAnhPartem2 = @"class="""" src=""(.*?)""";
-                var DanhSachAnh2 = Regex.Matches(DanhSachAnh1[0].ToString(), DanhSachAnhPartem2, RegexOptions.Singleline);
+                var AnhTable = NoiDungChuong.DocumentNode.SelectSingleNode(@"//*[@id=""image-load""]");
+                var DanhSachAnh = AnhTable.SelectNodes(@"a").ToList();
 
                 //Nếu danh sách rỗng tức là xảy ra lỗi không tương thích
-                if (DanhSachAnh2.Count == 0)
+                if (DanhSachAnh.Count == 0)
                 {
                     Ten = "[Lỗi tool không còn tương thích với web nguồn]\n" + IDTruyen + " " + Nguon;
                     ChuongHienTai = Ten;
@@ -1147,10 +1141,9 @@ namespace Tool_Upload
                 DemAnh = 0;
 
                 //Tải các ảnh có trong chương
-                foreach (var anh in DanhSachAnh2)
+                foreach (var anh in DanhSachAnh)
                 {
-                    LinkAnh = anh.ToString().Replace(@"class="""" src=""", "");
-                    LinkAnh = LinkAnh.Replace(@"""", "");
+                    LinkAnh = anh.GetAttributeValue("href", "");
 
                     try
                     {
@@ -2699,23 +2692,22 @@ namespace Tool_Upload
 
             string htmlDanhSachChuong = chromeDriver.PageSource;
 
+            var NoiDungTruyen = new HtmlAgilityPack.HtmlDocument();
+            NoiDungTruyen.LoadHtml(htmlDanhSachChuong);
+
             //Lấy tên truyện
-            string TenTruyen = Regex.Match(htmlDanhSachChuong, @"<h2 class=""info-title"">(.*?)</h2>", RegexOptions.Singleline).Value;
-            TenTruyen = TenTruyen.Replace(@"<h2 class=""info-title"">", "").Replace(@"</h2>", "");
+            string TenTruyen = NoiDungTruyen.DocumentNode.SelectSingleNode(@"//*[@class=""info-title""]").InnerHtml;
 
             //Lấy danh sách chương có trong truyện
-            string DanhSachChuongPartem1 = @"<tbody>(.*?)</tbody>";
-            var DanhSachChuong1 = Regex.Matches(htmlDanhSachChuong, DanhSachChuongPartem1, RegexOptions.Singleline);
-
-            string DanhSachChuongPartem2 = @"<a(.*?)</a>";
-            var DanhSachChuong2 = Regex.Matches(DanhSachChuong1[0].ToString(), DanhSachChuongPartem2, RegexOptions.Singleline);
+            var ChuongTable = NoiDungTruyen.DocumentNode.SelectSingleNode(@"//table[@class=""table table-striped""]/tbody");
+            var DanhSachChuong = ChuongTable.SelectNodes(@"tr/td[1]/a").ToList();
 
             string Ten = "";
             string Link, LinkAnh = "";
             int DemAnh = 0;
 
             //int i = DanhSachChuong2.Count -  1 - Tre; //Giới hạn danh sách với độ trễ (giới hạn cuối tùy kiểu danh sách)
-            int i = DanhSachChuong2.Count - 1;
+            int i = DanhSachChuong.Count - 1;
 
             //Nếu danh sách rỗng tức là xảy ra lỗi không tương thích
             if (i < 0)
@@ -2731,10 +2723,7 @@ namespace Tool_Upload
             {
                 TonTai = "Không";
 
-                var TenChuong = Regex.Matches(DanhSachChuong2[i].ToString(), @">(.*?)<", RegexOptions.Singleline);
-                Ten = TenChuong[0].ToString().Replace(@">", "");
-                Ten = Ten.Replace(@"<", "");
-                Ten = Ten.Replace(TenTruyen, "").Replace("–", "").Trim();
+                Ten = DanhSachChuong[i].InnerHtml.ToLower().Replace(TenTruyen.ToLower(), "").Replace("–", "").Trim();
 
                 if (ChuongHienTai == "")
                 {
@@ -2771,15 +2760,10 @@ namespace Tool_Upload
             while (i >= 0 + Tre) //Giới hạn danh sách với độ trễ
             {
                 //Lọc lấy link chương
-                var LinkChuong = Regex.Matches(DanhSachChuong2[i].ToString(), @"href=""(.*?)""", RegexOptions.Singleline);
-                Link = LinkChuong[0].ToString().Replace(@"href=""", "");
-                Link = Link.Replace(@"""", "");
+                Link = DanhSachChuong[i].GetAttributeValue("href","");
 
                 //Lọc lấy tên chương
-                var TenChuong = Regex.Matches(DanhSachChuong2[i].ToString(), @">(.*?)<", RegexOptions.Singleline);
-                Ten = TenChuong[0].ToString().Replace(@">", "");
-                Ten = Ten.Replace(@"<", "");
-                Ten = Ten.Replace(TenTruyen, "").Replace("–", "").Trim();
+                Ten = DanhSachChuong[i].InnerHtml.ToLower().Replace(TenTruyen.ToLower(), "").Replace("–", "").Trim();
 
                 if (Ten.ToLower().Contains("raw") || Ten.ToLower().Contains("eng") || Ten.ToLower().Contains("english"))
                 {
@@ -2802,16 +2786,11 @@ namespace Tool_Upload
                 chromeDriver.Url = Link;
                 chromeDriver.Navigate();
 
-                string htmlDanhSachAnh = chromeDriver.PageSource;
-
-                string DanhSachAnhPartem1 = @"id=""chapter-content""(.*?)</section>";
-                var DanhSachAnh1 = Regex.Matches(htmlDanhSachAnh, DanhSachAnhPartem1, RegexOptions.Singleline);
-
-                string DanhSachAnhPartem2 = @"><img class=""chapter-img"" src=""(.*?)""";
-                var DanhSachAnh2 = Regex.Matches(DanhSachAnh1[0].ToString(), DanhSachAnhPartem2, RegexOptions.Singleline);
+                var AnhTable = chromeDriver.FindElementById(@"chapter-content");
+                List<IWebElement> DanhSachAnh = AnhTable.FindElements(By.TagName("img")).ToList();
 
                 //Nếu danh sách rỗng tức là xảy ra lỗi không tương thích
-                if (DanhSachAnh2.Count == 0)
+                if (DanhSachAnh.Count == 0)
                 {
                     Ten = "[Lỗi tool không còn tương thích với web nguồn]\n" + IDTruyen + " " + Nguon;
                     ChuongHienTai = Ten;
@@ -2822,10 +2801,9 @@ namespace Tool_Upload
                 DemAnh = 0;
 
                 //Tải các ảnh có trong chương
-                foreach (var anh in DanhSachAnh2)
+                foreach (IWebElement anh in DanhSachAnh)
                 {
-                    LinkAnh = anh.ToString().Replace(@"><img class=""chapter-img"" src=""", "");
-                    LinkAnh = LinkAnh.Replace(@"""", "");
+                    LinkAnh = anh.GetAttribute("src");
 
                     try
                     {
@@ -2871,16 +2849,19 @@ namespace Tool_Upload
 
             string htmlDanhSachChuong = chromeDriver.PageSource;
 
+            var NoiDungTruyen = new HtmlAgilityPack.HtmlDocument();
+            NoiDungTruyen.LoadHtml(htmlDanhSachChuong);
+
             //Lấy danh sách chương có trong truyện
-            var DanhSachChuong1 = chromeDriver.FindElementByTagName("tbody");
-            List<IWebElement> DanhSachChuong2 = DanhSachChuong1.FindElements(By.TagName("a")).ToList();
+            var ChuongTable = NoiDungTruyen.DocumentNode.SelectSingleNode(@"//table[@class=""table table-striped""]/tbody");
+            var DanhSachChuong = ChuongTable.SelectNodes(@"tr/td[1]/a").ToList();
 
             string Ten = "";
             string Link, LinkAnh = "";
             int DemAnh = 0;
 
             //int i = DanhSachChuong2.Count -  1 - Tre; //Giới hạn danh sách với độ trễ (giới hạn cuối tùy kiểu danh sách)
-            int i = DanhSachChuong2.Count - 1;
+            int i = DanhSachChuong.Count - 1;
 
             //Nếu danh sách rỗng tức là xảy ra lỗi không tương thích
             if (i < 0)
@@ -2896,7 +2877,7 @@ namespace Tool_Upload
             {
                 TonTai = "Không";
 
-                Ten = DanhSachChuong2[i].GetAttribute("innerHTML").Trim();
+                Ten = DanhSachChuong[i].InnerHtml.Trim();
 
                 if (ChuongHienTai == "")
                 {
@@ -2933,10 +2914,10 @@ namespace Tool_Upload
             while (i >= 0 + Tre) //Giới hạn danh sách với độ trễ
             {
                 //Lọc lấy link chương
-                Link = DanhSachChuong2[i].GetAttribute("href").Trim();
+                Link = DanhSachChuong[i].GetAttributeValue("href","").Trim();
 
                 //Lọc lấy tên chương
-                Ten = DanhSachChuong2[i].GetAttribute("innerHTML").Trim();
+                Ten = DanhSachChuong[i].InnerHtml.Trim();
 
                 //Loại bỏ kí tự hạn chế trong tên
                 foreach (string KiTu in ListHanChe)
@@ -3298,7 +3279,7 @@ namespace Tool_Upload
             chromeDriver.Url = Nguon;
             chromeDriver.Navigate();
 
-            if(chromeDriver.Url.Contains("Warning"))
+            if (chromeDriver.Url.Contains("Warning"))
             {
                 var TiepTuc = chromeDriver.FindElementById("aYes");
                 TiepTuc.Click();

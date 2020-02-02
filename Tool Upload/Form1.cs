@@ -96,16 +96,17 @@ namespace Tool_Upload
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
             panel1.Hide();
+            cbTaiTiepKhiLoi.Enabled = false;
         }
 
-        #region Kiểm tra, nâng cấp và bảo trì
+        #region Kiểm tra, nâng cấp, thử nghiệm và bảo trì
 
         void test()
         {
             
             WebClient client = new WebClient();
             //client.Headers.Set("Referer", "");
-            client.DownloadFile("https://1.bp.blogspot.com/-bJ7Fm7caJZs/XbEjotLVklI/AAAAAAACcx0/OUNKj4Xq0As1hRQR4yPPWvyAQHcso-ocQCLcBGAsYHQ/s1600/01.jpg?imgmax=0", "C:\\Users\\NBT\\Desktop\\Test.webp");
+            client.DownloadFile("https://images8.vnstory.xyz/vnstory/c2/79/c279fc9f96710bfd643dfd6fbef812e0.webp", "C:\\Users\\NBT\\Desktop\\Test.webp");
 
 
 
@@ -442,7 +443,7 @@ namespace Tool_Upload
             int OriginalW = img.Width;
             int OriginalH = img.Height;
 
-            // lấy chiều rộng và chiều cao mới tương ứng với chiều rộng truyền vào của ảnh (nó sẽ giúp ảnh của chúng ta sau khi resize vần giứ được độ cân đối của tấm ảnh            
+            // lấy chiều rộng và chiều cao mới tương ứng với chiều rộng truyền vào của ảnh (nó sẽ giúp ảnh sau khi resize vần giứ được độ cân đối của tấm ảnh)            
             int NewH = int.Parse(Math.Round(Math.Sqrt((1.0) * OriginalH * OriginalH)).ToString());
 
             if(NenLanDau == false)
@@ -506,7 +507,7 @@ namespace Tool_Upload
                 CapNhatURL.Click();
 
                 //Tạo danh sách ảnh cho chương
-                i = 0; //Kiểm tra xem có phải ảnh đầu tiên trong list không
+                i = 0;
                 string ImagePath = "";
                 string[] file = System.IO.Directory.GetFiles(DuongDan + "\\" + ThuMuc.ToString(), "*.*", SearchOption.TopDirectoryOnly);
                 Boolean NenLanDau = true;
@@ -515,25 +516,25 @@ namespace Tool_Upload
                     ImagePath = Anh;
 
                     //Kiểm tra dung lượng ảnh
-                    FileInfo FI = new FileInfo(ImagePath);
+                    FileInfo FS = new FileInfo(ImagePath);
                     NenLanDau = true;
-                    while (FI.Length > Limit)
+                    while (FS.Length > Limit)
                     {
                         if(NenLanDau == true)
                         {                         
-                            ResizeImage(FI.Length, ImagePath, true).Save(ImagePath.Replace(ImagePath.Split('.').Last(), "jpg"), ImageFormat.Jpeg); //Chỉnh sửa lại theo tỉ lệ 1:1
+                            ResizeImage(FS.Length, ImagePath, true).Save(ImagePath.Replace(ImagePath.Split('.').Last(), "jpg"), ImageFormat.Jpeg); //Chỉnh sửa lại theo tỉ lệ 1:1
                             ImagePath = ImagePath.Replace(ImagePath.Split('.').Last(), "jpg"); //Chỉnh sửa lại đường dẫn
                             NenLanDau = false; 
-                            FI = new FileInfo(ImagePath); //Cập nhật lại dung lượng ảnh mới
+                            FS = new FileInfo(ImagePath); //Cập nhật lại dung lượng ảnh mới
                         }
                         else
                         {
-                            ResizeImage(FI.Length, ImagePath, false).Save(ImagePath, ImageFormat.Jpeg);
-                            FI = new FileInfo(ImagePath); //Cập nhật lại dung lượng ảnh mới
+                            ResizeImage(FS.Length, ImagePath, false).Save(ImagePath, ImageFormat.Jpeg);
+                            FS = new FileInfo(ImagePath); //Cập nhật lại dung lượng ảnh mới
                         }                      
                     }
 
-                    if (i == 0)
+                    if (i == 0) //Kiểm tra xem có phải ảnh đầu tiên trong list không
                     {
                         ListFile = ListFile + ImagePath.Replace("\\", "/");
                         i = 1;
@@ -562,10 +563,8 @@ namespace Tool_Upload
                 while (i < 3)
                 {
                     var Process = chromeDriver.FindElementByClassName("progress-bar-success");
-                    
-                    //var Wait = chromeDriver.ExecuteScript(@"return document.readyState") as string;
 
-                    if (Process.Displayed == false)// && Wait == "complete")
+                    if (Process.Displayed == false)
                     {
                         break;
                     }
@@ -1398,6 +1397,7 @@ namespace Tool_Upload
         private void btnDinhDang_Click(object sender, EventArgs e)
         {
             Process.Start(".\\DinhDang.txt");
+            cbTaiTiepKhiLoi.Enabled = true;
         }
 
         private void txtCheckLog_Click(object sender, EventArgs e)
